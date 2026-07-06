@@ -3,6 +3,9 @@
    CONFIGURATION
    ============================================================ */
 const TEACHER_EMAIL = "stevengauchier@gmail.com";
+const EMAILJS_SERVICE_ID = "service_jjqlfck";
+const EMAILJS_TEMPLATE_ID = "template_a9uazrs";
+const EMAILJS_PUBLIC_KEY = "8ZF_oJb8pHOzojn1p";
 const EXAM_DURATION_SECONDS = 120 * 60; // 120 minutes
 const DEADLINE = new Date("2099-12-31T23:59:59");
 
@@ -484,7 +487,7 @@ async function submitExam(autoSubmit) {
   }
 
   buildEmailContent(objectiveScore, detail, subjectiveAnswers);
-  setupSubmitButtons();
+setupSubmitButtons(objectiveScore, detail, subjectiveAnswers);
 }
 
 function buildEmailContent(objectiveScore, detail, subjectiveAnswers) {
@@ -509,33 +512,60 @@ function buildEmailContent(objectiveScore, detail, subjectiveAnswers) {
   lastEmailBody = body;
 }
 
-function setupSubmitButtons() {
-  const mailtoLink = `mailto:${TEACHER_EMAIL}?subject=${encodeURIComponent(lastEmailSubject)}&body=${encodeURIComponent(lastEmailBody)}`;
-  window.__lastMailtoLink = mailtoLink;
+function setupSubmitButtons(objectiveScore, detail, subjectiveAnswers) {
+  const submitBtn = document.getElementById('resend-btn');
+  const copyBtn = document.getElementById('copy-btn');
 
-  document.getElementById('resend-btn').onclick = () => { window.location.href = mailtoLink; };
+  // Kache bouton copie a — pa bezwen ankò
+  if (copyBtn) copyBtn.style.display = 'none';
 
-  document.getElementById('copy-btn').onclick = async () => {
-    const fullText = `À : ${TEACHER_EMAIL}\nObjet : ${lastEmailSubject}\n\n${lastEmailBody}`;
-    try {
-      await navigator.clipboard.writeText(fullText);
-      document.getElementById('copy-feedback').classList.add('show');
-    } catch (e) {
-      const ta = document.getElementById('fallback-textarea');
-      ta.value = fullText;
-      ta.classList.add('show');
-      ta.select();
-    }
-  };
+  submitBtn.textContent = 'Envoyer les résultats';
+  submitBtn.onclick = () => sendEmail(objectiveScore, detail, subjectiveAnswers);
 
-  // Tentative d'ouverture automatique de l'e-mail
-  window.location.href = mailtoLink;
+  // Voye otomatikman
+  sendEmail(objectiveScore, detail, subjectiveAnswers);
+}
+
+async function sendEmail(objectiveScore, detail, subjectiveAnswers) {
+  const submitBtn = document.getElementById('resend-btn');
+  submitBtn.textContent = 'Envoi en cours...';
+  submitBtn.disabled = true;
+
+  const detailText = detail.join('\n');
+  const subjText = subjectiveAnswers.join('\n\n---\n\n');
+
+  try {
+    await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      {
+        student_name: studentName,
+        objective_score: objectiveScore,
+        detail: detailText,
+        subjective: subjText,
+      },
+      EMAILJS_PUBLIC_KEY
+    );
+
+    submitBtn.textContent = '✓ Résultats envoyés';
+    submitBtn.style.background = '#1D9E75';
+    document.getElementById('copy-feedback').textContent = 'Vos résultats ont été envoyés automatiquement à l\'enseignant.';
+    document.getElementById('copy-feedback').classList.add('show');
+
+  } catch (error) {
+    console.error('EmailJS error:', error);
+    submitBtn.textContent = 'Réessayer l\'envoi';
+    submitBtn.disabled = false;
+    document.getElementById('copy-feedback').textContent = 'Erreur d\'envoi — cliquez sur "Réessayer" ou copiez manuellement.';
+    document.getElementById('copy-feedback').classList.add('show');
+  }
 }
 
 /* ============================================================
    INITIALISATION GÉNÉRALE
    ============================================================ */
 (async function init() {
+  emailjs.init(EMAILJS_PUBLIC_KEY);
   if (checkDeadline()) return;
   await initHashes();
 })();
