@@ -54,7 +54,7 @@
     border-radius: 50%; box-shadow: 0 0 0 4px var(--accent-bg);
   }
 
-  #logo-intro { display: block; max-width: 140px; margin-bottom: 20px; }
+  #logo-intro { display: block; max-width: 200px; margin-bottom: 20px; }
   #screen-intro h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; line-height: 1.15; }
   #screen-intro .lede { font-size: 16px; color: var(--text-dim); margin-bottom: 32px; max-width: 560px; }
 
