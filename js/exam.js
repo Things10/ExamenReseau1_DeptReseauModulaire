@@ -20,7 +20,7 @@ async function sha256(text) {
 }
 
 /* ============================================================
-   SECTION A — QCM (10 x 3 pts = 30 pts)
+   SECTION A — QCM (11 x 3 pts = 33 pts)
    ============================================================ */
 const QCM = [
   { q: "Que peut-on placer dans ou sur un colis pour en assurer le suivi ?", opts: ["Déclencheur", "Capteur", "Carte d'interface de réseau", "Étiquette RFID"], hash: "" },
@@ -33,10 +33,11 @@ const QCM = [
   { q: "Quelle topologie réseau relie tous les postes à un point central unique ?", opts: ["Bus", "Étoile", "Anneau", "Maillée"], hash: "" },
   { q: "Quelle technologie est utilisée pour l'identification sans contact par radiofréquence, courante en domotique ?", opts: ["Bluetooth", "RFID", "NFC", "Zigbee"], hash: "" },
   { q: "Dans le modèle TCP/IP (4 couches), quelle couche correspond aux couches 5, 6 et 7 du modèle OSI combinées ?", opts: ["Couche Accès réseau", "Couche Internet", "Couche Transport", "Couche Application"], hash: "" },
+  { q: "Reportez-vous à l'illustration. Combien de bits sont représentés par chaque groupe de quatre valeurs hexadécimales contenues entre les deux points dans une adresse IPv6 ?", opts: ["8", "4", "64", "32", "16"], hash: "" },
 ];
 const QCM_ANSWERS = [
   "Étiquette RFID", "Données déduites", "Intermédiaire", "192.168.1.0", "8",
-  "Câble à paires torsadées (RJ-45)", "80", "Étoile", "RFID", "Couche Application"
+  "Câble à paires torsadées (RJ-45)", "80", "Étoile", "RFID", "Couche Application", "16"
 ];
 
 /* ============================================================
@@ -126,15 +127,15 @@ const MULTI = [
 ];
 
 /* ============================================================
-   SECTION F — Questions subjectives (26 pts, 6 questions)
+   SECTION F — Questions subjectives (33 pts, 6 questions)
    ============================================================ */
 const SUBJ = [
-  { q: "Définissez ce qu'est un réseau informatique et expliquez la différence entre un réseau LAN et un réseau WAN.", pts: 4 },
-  { q: "Expliquez le rôle du modèle OSI. Pourquoi un modèle en couches est-il utile pour comprendre les réseaux ?", pts: 4 },
-  { q: "Décrivez les trois principaux modes de transmission de données (simplex, half-duplex, full-duplex) en donnant un exemple concret pour chacun.", pts: 4 },
-  { q: "Expliquez la différence entre TCP et UDP. Dans quel cas utiliserait-on plutôt UDP malgré son manque de fiabilité ?", pts: 5 },
-  { q: "Qu'est-ce qu'une adresse MAC, et en quoi diffère-t-elle fondamentalement d'une adresse IP en termes de portée (locale vs routable) ?", pts: 4 },
-  { q: "Un poste à poste classique (P2P) montre une limite par rapport à une architecture client/serveur lorsqu'un réseau grandit en nombre de machines. Expliquez pourquoi, avec un exemple concret.", pts: 5 },
+  { q: "Définissez ce qu'est un réseau informatique et expliquez la différence entre un réseau LAN et un réseau WAN.", pts: 5 },
+  { q: "Expliquez le rôle du modèle OSI. Pourquoi un modèle en couches est-il utile pour comprendre les réseaux ?", pts: 5 },
+  { q: "Décrivez les trois principaux modes de transmission de données (simplex, half-duplex, full-duplex) en donnant un exemple concret pour chacun.", pts: 5 },
+  { q: "Expliquez la différence entre TCP et UDP. Dans quel cas utiliserait-on plutôt UDP malgré son manque de fiabilité ?", pts: 6 },
+  { q: "Qu'est-ce qu'une adresse MAC, et en quoi diffère-t-elle fondamentalement d'une adresse IP en termes de portée (locale vs routable) ?", pts: 6 },
+  { q: "Un poste à poste classique (P2P) montre une limite par rapport à une architecture client/serveur lorsqu'un réseau grandit en nombre de machines. Expliquez pourquoi, avec un exemple concret.", pts: 6 },
 ];
 
 let timerInterval = null;
@@ -496,17 +497,17 @@ function buildEmailContent(objectiveScore, detail, subjectiveAnswers) {
   let body = `EXAMEN RÉSEAU 1 — RÉSULTATS\n`;
   body += `Étudiant : ${studentName}\n`;
   body += `============================================\n\n`;
-  body += `NOTE AUTOMATIQUE (Sections A+B+C+D+E) : ${objectiveScore} / 64\n\n`;
+  body += `NOTE AUTOMATIQUE (Sections A+B+C+D+E) : ${objectiveScore} / 67\n\n`;
   body += `--- Détail des réponses automatiques ---\n`;
   detail.forEach(line => { body += line + '\n'; });
   body += `\n============================================\n`;
-  body += `SECTION F — RÉPONSES SUBJECTIVES (à corriger, 26 pts)\n`;
+  body += `SECTION F — RÉPONSES SUBJECTIVES (à corriger, 33 pts)\n`;
   body += `============================================\n\n`;
   subjectiveAnswers.forEach(ans => { body += ans + '\n\n---\n\n'; });
   body += `============================================\n`;
   body += `CALCUL FINAL À COMPLÉTER PAR L'ENSEIGNANT :\n`;
-  body += `Note automatique : ${objectiveScore} / 64\n`;
-  body += `Note manuelle (Section F) : ____ / 26\n`;
+  body += `Note automatique : ${objectiveScore} / 67\n`;
+  body += `Note manuelle (Section F) : ____ / 33\n`;
   body += `TOTAL : ____ / 100   (seuil de réussite : 65/100)\n`;
 
   lastEmailBody = body;
