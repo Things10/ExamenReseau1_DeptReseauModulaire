@@ -234,7 +234,7 @@ function renderQCM() {
     if (item.img === 'schema-reseau') {
       html += `<div style="margin-bottom:16px">${NETWORK_DIAGRAM_SVG}</div>`;
     } else if (item.img === 'ipv6') {
-      html += `<div style="margin-bottom:16px">${IPV6_DIAGRAM_SVG}</div>`;
+      html += `<div style="margin-bottom:16px;text-align:center">${IPV6_DIAGRAM_SVG}</div>`;
     }
     html += `<div class="opt-list">`;
     item.opts.forEach((opt, j) => {
