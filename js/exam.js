@@ -168,7 +168,7 @@ async function initHashes() {
    IMAGE DU SCHÉMA RÉSEAU (intégrée en SVG, reconstitution du schéma fourni)
    ============================================================ */
 const IPV6_DIAGRAM_SVG = `
-<svg viewBox="0 0 520 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;background:#fff;border-radius:8px;padding:12px 0">
+<svg viewBox="0 0 520 70" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;background:#fff;border-radius:8px;padding:12px 0">
   <text x="10" y="28" font-family="Courier New,monospace" font-size="18" font-weight="bold" fill="#333">
     <tspan fill="#2E6B82">2001</tspan><tspan fill="#888">:</tspan>
     <tspan fill="#2E6B82">0db8</tspan><tspan fill="#888">:</tspan>
@@ -179,23 +179,6 @@ const IPV6_DIAGRAM_SVG = `
     <tspan fill="#2E6B82">0370</tspan><tspan fill="#888">:</tspan>
     <tspan fill="#2E6B82">7334</tspan>
   </text>
-  <line x1="12" y1="38" x2="75" y2="38" stroke="#2E6B82" stroke-width="2"/>
-  <line x1="78" y1="38" x2="141" y2="38" stroke="#2E6B82" stroke-width="2"/>
-  <line x1="144" y1="38" x2="207" y2="38" stroke="#2E6B82" stroke-width="2"/>
-  <line x1="210" y1="38" x2="273" y2="38" stroke="#2E6B82" stroke-width="2"/>
-  <line x1="276" y1="38" x2="339" y2="38" stroke="#2E6B82" stroke-width="2"/>
-  <line x1="342" y1="38" x2="405" y2="38" stroke="#2E6B82" stroke-width="2"/>
-  <line x1="408" y1="38" x2="471" y2="38" stroke="#2E6B82" stroke-width="2"/>
-  <line x1="474" y1="38" x2="510" y2="38" stroke="#2E6B82" stroke-width="2"/>
-  <text x="38" y="62" text-anchor="middle" font-family="Arial" font-size="12" fill="#2E6B82" font-weight="bold">16 bits</text>
-  <text x="110" y="62" text-anchor="middle" font-family="Arial" font-size="12" fill="#2E6B82" font-weight="bold">16 bits</text>
-  <text x="174" y="62" text-anchor="middle" font-family="Arial" font-size="12" fill="#2E6B82" font-weight="bold">16 bits</text>
-  <text x="240" y="62" text-anchor="middle" font-family="Arial" font-size="12" fill="#2E6B82" font-weight="bold">16 bits</text>
-  <text x="306" y="62" text-anchor="middle" font-family="Arial" font-size="12" fill="#2E6B82" font-weight="bold">16 bits</text>
-  <text x="372" y="62" text-anchor="middle" font-family="Arial" font-size="12" fill="#2E6B82" font-weight="bold">16 bits</text>
-  <text x="438" y="62" text-anchor="middle" font-family="Arial" font-size="12" fill="#2E6B82" font-weight="bold">16 bits</text>
-  <text x="494" y="62" text-anchor="middle" font-family="Arial" font-size="12" fill="#2E6B82" font-weight="bold">16 bits</text>
-  <text x="260" y="82" text-anchor="middle" font-family="Arial" font-size="11" fill="#888">4 chiffres hexadécimaux = 16 bits</text>
 </svg>`;
 
 const NETWORK_DIAGRAM_SVG = `
