@@ -454,7 +454,7 @@ function startExam() {
   if (!studentName || !nameRegex.test(studentName)) {
     document.querySelector('.modal-icon').textContent = '!';
     document.querySelector('.modal-title').textContent = 'Nom requis';
-    document.querySelector('.modal-msg').textContent = 'Veuillez entrer votre nom complet.';
+    document.querySelector('.modal-msg').textContent = 'Entrez votre nom complet';
     document.getElementById('modal-overlay').classList.add('show');
     return;
   }
