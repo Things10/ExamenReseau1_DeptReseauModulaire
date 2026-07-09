@@ -449,7 +449,8 @@ function startExam() {
   studentName = nameInput.value.trim();
 
   /* Yon sèl tchek: si non an vid oswa move fòma, montre menm pop-up la -- examen_reseau_v2 */
-  const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]+)*(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]+)*){1,}$/;
+  /* Chak pati non an dwe gen omwen 2 lèt -- pa aksepte inisyal tankou "GS" oswa "G S" */
+  const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]{2,}(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]{2,})*(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]{2,}(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]{2,})*)+$/;
   if (!studentName || !nameRegex.test(studentName)) {
     document.querySelector('.modal-icon').textContent = '!';
     document.querySelector('.modal-title').textContent = 'Nom requis';
