@@ -399,6 +399,12 @@ function dropSingle(ev, idx) {
 /* F�men modal pop-up la -- examen_reseau_v2 */
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
+  /* Retabli kontni modal la ak konsantre sou non an -- examen_reseau_v2 */
+  document.querySelector('.modal-icon').textContent = '!';
+  document.querySelector('.modal-title').textContent = 'Attention';
+  document.querySelector('.modal-msg').innerHTML = 'Vous devez r�pondre � au moins une question avant de soumettre.';
+  const ni = document.getElementById('student-name');
+  if (ni) ni.focus();
 }
 
 function updatePrevBtn() {
@@ -576,6 +582,9 @@ async function submitExam(autoSubmit) {
   if (examSubmitted) return;
   if (!autoSubmit && !hasAnyAnswer()) {
     /* Montre modal pop-up olye alert() -- examen_reseau_v2 */
+    document.querySelector('.modal-icon').textContent = '!';
+    document.querySelector('.modal-title').textContent = 'Attention';
+    document.querySelector('.modal-msg').innerHTML = 'Vous devez r�pondre � au moins une question avant de soumettre.';
     document.getElementById('modal-overlay').classList.add('show');
     return;
   }
