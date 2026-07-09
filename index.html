@@ -53,9 +53,31 @@
     <div id="timer">02:00:00</div>
   </div>
 
-  <!-- Bar pwogresyon -- examen_reseau_v2 -->
+  <!-- Bar pwogresyon ak pwen seksyon -- examen_reseau_v2 -->
   <div id="progress-wrap">
-    <div id="progress-bar"><div id="progress-fill"></div></div>
+    <div id="progress-col">
+      <div id="progress-bar-outer">
+        <div id="progress-bar">
+          <div id="progress-fill"></div>
+        </div>
+        <div id="progress-dots">
+          <span class="pdot" style="left:0%"></span>
+          <span class="pdot" style="left:28.2%"></span>
+          <span class="pdot" style="left:53.8%"></span>
+          <span class="pdot" style="left:69.2%"></span>
+          <span class="pdot" style="left:79.5%"></span>
+          <span class="pdot" style="left:84.6%"></span>
+        </div>
+      </div>
+      <div id="progress-labels">
+        <span class="plabel">A. QCM</span>
+        <span class="plabel">B. V/F</span>
+        <span class="plabel">C. Liste</span>
+        <span class="plabel">D. Glisser</span>
+        <span class="plabel">E. Multi</span>
+        <span class="plabel">F. R&eacute;flexion</span>
+      </div>
+    </div>
     <div id="progress-text">1 / 39</div>
   </div>
 
@@ -67,6 +89,7 @@
 
     <!-- Navigasyon -- examen_reseau_v2 -->
     <div id="nav-zone">
+      <button id="prev-btn" onclick="goPrev()" disabled>Question pr&eacute;c&eacute;dente</button>
       <button id="next-btn" onclick="goNext()" disabled>Question suivante</button>
     </div>
 

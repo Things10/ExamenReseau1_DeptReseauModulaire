@@ -273,11 +273,12 @@ function updateNextBtn() {
   btn.textContent = currentQ === QUESTIONS.length - 1 ? 'Voir le r\u00e9sum\u00e9' : 'Question suivante';
 }
 
-function renderQuestion(idx) {
+function renderQuestion(idx, viewOnly) {
   const q = QUESTIONS[idx];
   const container = document.getElementById('q-container');
   const label = document.getElementById('q-section-label');
   label.textContent = SECTION_LABELS[q.section] || '';
+  container.className = viewOnly ? 'view-only' : '';
 
   let html = `<div class="q-card">`;
   html += `<div class="q-num">${q.section}.${q.sIdx + 1}</div>`;
@@ -292,16 +293,18 @@ function renderQuestion(idx) {
 
   if (q.type === 'qcm' || q.type === 'vf') {
     const opts = q.type === 'vf' ? ['Vrai', 'Faux'] : q.opts;
+    const dis = viewOnly ? ' disabled' : '';
     html += `<div class="opt-list">`;
     opts.forEach((opt, j) => {
       const ck = userAnswers[idx] === opt ? ' checked' : '';
-      html += `<div class="opt-item${ck}" id="q-${idx}-${j}" onclick="selOpt(${idx},${j})">`;
-      html += `<input type="radio" name="q-${idx}" value="${opt}"${ck ? ' checked' : ''}>`;
+      html += `<div class="opt-item${ck}" id="q-${idx}-${j}" ${viewOnly ? '' : `onclick="selOpt(${idx},${j})"`}>`;
+      html += `<input type="radio" name="q-${idx}" value="${opt}"${ck ? ' checked' : ''}${dis}>`;
       html += `<label>${opt}</label></div>`;
     });
     html += `</div>`;
   } else if (q.type === 'dd') {
-    html += `<select class="dd" id="q-${idx}" onchange="ansDD(${idx},this.value)">`;
+    const dis = viewOnly ? ' disabled' : '';
+    html += `<select class="dd" id="q-${idx}"${viewOnly ? '' : ` onchange="ansDD(${idx},this.value)"`}${dis}>`;
     html += `<option value="">\u2014 Choisir une r\u00e9ponse \u2014</option>`;
     q.options.forEach(o => {
       html += `<option value="${o}"${userAnswers[idx] === o ? ' selected' : ''}>${o}</option>`;
@@ -310,30 +313,34 @@ function renderQuestion(idx) {
   } else if (q.type === 'dnd') {
     const allChips = [...DND.map(d => d.ans), ...DND_DECOYS];
     const used = userAnswers[idx] || '';
-    html += `<div class="dnd-target">\u00c9quipement : ${q.target}</div>`;
+    html += `<div class="dnd-layout">`;
+    html += `<div class="dnd-equip">${q.target}</div>`;
     html += `<div class="dnd-pool" id="dnd-pool-${idx}">`;
     allChips.forEach((chip, ci) => {
       const pl = chip === used;
-      html += `<div class="dnd-chip${pl ? ' placed' : ''}" id="dnd-chip-${idx}-${ci}" draggable="${!pl}" data-text="${chip.replace(/"/g, '&quot;')}" ondragstart="dragStartSingle(event,${idx},${ci})">${chip}</div>`;
+      html += `<div class="dnd-chip${pl ? ' placed' : ''}" id="dnd-chip-${idx}-${ci}"${viewOnly ? '' : ` draggable="${!pl}" data-text="${chip.replace(/"/g, '&quot;')}" ondragstart="dragStartSingle(event,${idx},${ci})"`}>${chip}</div>`;
     });
-    html += `</div>`;
-    html += `<div class="dnd-slot${used ? ' filled' : ''}" id="dnd-slot-${idx}" ondragover="dragOverSingle(event)" ondrop="dropSingle(event,${idx})">${used || 'D\u00e9posez la description ici'}</div>`;
+    html += `</div></div>`;
+    html += `<div class="dnd-slot${used ? ' filled' : ''}" id="dnd-slot-${idx}"${viewOnly ? '' : ' ondragover="dragOverSingle(event)" ondrop="dropSingle(event,' + idx + ')"'}>${(used && used !== 'undefined') ? used : 'D\u00e9posez la description ici'}</div>`;
   } else if (q.type === 'multi') {
+    const dis = viewOnly ? ' disabled' : '';
     html += `<div class="opt-list">`;
     q.opts.forEach((opt, oi) => {
       const ck = Array.isArray(userAnswers[idx]) && userAnswers[idx].includes(opt);
-      html += `<div class="opt-item${ck ? ' checked' : ''}" id="q-${idx}-${oi}" onclick="selMulti(${idx},${oi})">`;
-      html += `<input type="checkbox" id="cb-${idx}-${oi}" value="${opt}"${ck ? ' checked' : ''}>`;
+      html += `<div class="opt-item${ck ? ' checked' : ''}" id="q-${idx}-${oi}" ${viewOnly ? '' : `onclick="selMulti(${idx},${oi})"`}>`;
+      html += `<input type="checkbox" id="cb-${idx}-${oi}" value="${opt}"${ck ? ' checked' : ''}${dis}>`;
       html += `<label>${opt}</label></div>`;
     });
     html += `</div>`;
   } else if (q.type === 'subj') {
-    html += `<textarea class="subj" id="q-${idx}" oninput="ansSubj(${idx},this.value)" placeholder="Votre r\u00e9ponse...">${userAnswers[idx] || ''}</textarea>`;
+    const ro = viewOnly ? ' readonly' : '';
+    html += `<textarea class="subj" id="q-${idx}"${ro}${viewOnly ? '' : ` oninput="ansSubj(${idx},this.value)"`} placeholder="Votre r\u00e9ponse...">${userAnswers[idx] || ''}</textarea>`;
   }
 
   html += `</div>`;
   container.innerHTML = html;
   updateNextBtn();
+  updatePrevBtn();
   updateProgress();
 }
 
@@ -380,8 +387,8 @@ function dropSingle(ev, idx) {
       if (c.getAttribute('data-text') === userAnswers[idx]) { c.classList.remove('placed'); c.draggable = true; }
     });
   }
-  userAnswers[idx] = draggedSingle.text;
-  slot.textContent = draggedSingle.text;
+  userAnswers[idx] = draggedSingle.text || '';
+  slot.textContent = userAnswers[idx] || 'D\u00e9posez la description ici';
   slot.classList.add('filled');
   const chipEl = document.getElementById(`dnd-chip-${idx}-${draggedSingle.ci}`);
   if (chipEl) { chipEl.classList.add('placed'); chipEl.draggable = false; }
@@ -394,9 +401,19 @@ function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
 }
 
+function updatePrevBtn() {
+  const btn = document.getElementById('prev-btn');
+  if (!btn) return;
+  btn.disabled = currentQ === 0;
+}
+
 function goNext() {
-  if (currentQ < QUESTIONS.length - 1) { currentQ++; renderQuestion(currentQ); }
+  if (currentQ < QUESTIONS.length - 1) { currentQ++; renderQuestion(currentQ, false); }
   else showSummary();
+}
+
+function goPrev() {
+  if (currentQ > 0) { currentQ--; renderQuestion(currentQ, true); }
 }
 
 function showSummary() {
@@ -426,6 +443,16 @@ function startExam() {
   studentName = nameInput.value.trim();
   if (!studentName) { nameInput.style.borderColor = '#E0654F'; nameInput.focus(); return; }
 
+  /* Valide foma non an: omwen 2 mo, chak mo omwen 2 lèt, pa gen chif oswa karaktè espesyal -- examen_reseau_v2 */
+  const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]+)*(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]+)*){1,}$/;
+  if (!nameRegex.test(studentName)) {
+    document.querySelector('.modal-icon').textContent = '!';
+    document.querySelector('.modal-title').textContent = 'Format du nom';
+    document.querySelector('.modal-msg').innerHTML = 'Veuillez entrer votre nom complet (pr&eacute;nom et nom de famille).<br><br>Exemple&thinsp;: <strong>Jean Michel Dupont</strong><br><br>Les initiales comme <strong>GS</strong> ne sont pas accept&eacute;es.';
+    document.getElementById('modal-overlay').classList.add('show');
+    return;
+  }
+
   document.getElementById('screen-intro').style.display = 'none';
   document.getElementById('screen-exam').classList.add('show');
 
@@ -433,6 +460,7 @@ function startExam() {
   userAnswers = {};
   document.getElementById('q-section-label').style.display = 'block';
   document.getElementById('q-container').style.display = 'block';
+  document.getElementById('q-container').className = '';
   document.getElementById('nav-zone').style.display = 'block';
   document.getElementById('screen-summary').style.display = 'none';
   renderQuestion(0);
