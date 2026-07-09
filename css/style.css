@@ -112,21 +112,30 @@
   /* scroll-margin-top ajoute pou header a pa kache seksyon A lè scrollIntoView -- examen_reseau_v2 */
   #exam-body { max-width: 760px; margin: 0 auto; padding: 32px 24px 100px; scroll-margin-top: 70px; }
 
-  .section-divider {
-    font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--accent); margin: 40px 0 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  /* Bar pwogresyon liney -- examen_reseau_v2 */
+  #progress-wrap {
+    display: flex; align-items: center; gap: 12px;
+    max-width: 760px; margin: 0 auto; padding: 14px 24px 6px;
   }
-  .section-divider:first-child { margin-top: 0; }
-  .section-sub { color: var(--text-faint); font-size: 13px; margin-bottom: 20px; }
+  #progress-bar { flex: 1; height: 10px; background: var(--bg-card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  #progress-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 10px; transition: width 0.4s ease; }
+  #progress-text { font-family: var(--mono); font-size: 13px; color: var(--text-faint); min-width: 52px; text-align: right; }
 
-  .q-card {
-    background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
-    padding: 22px 24px; margin-bottom: 14px;
+  /* Etikèt seksyon anlè kesyon an -- examen_reseau_v2 */
+  #q-section-label {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 0; padding-bottom: 8px; border-bottom: 1px solid var(--border);
   }
-  .q-num { font-family: var(--mono); font-size: 12px; color: var(--text-faint); margin-bottom: 6px; }
-  .q-text { font-size: 15.5px; font-weight: 500; margin-bottom: 16px; line-height: 1.5; color: var(--text); }
-  .q-points { font-family: var(--mono); font-size: 11px; color: var(--accent); background: var(--accent-bg); padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
-  .q-img { max-width: 100%; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--border); }
+
+  /* Yon sèl kesyon alafwa -- examen_reseau_v2 */
+  #q-container { min-height: 200px; }
+  #q-container .q-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 28px 28px; margin-top: 20px;
+  }
+  #q-container .q-num { font-family: var(--mono); font-size: 12px; color: var(--text-faint); margin-bottom: 6px; }
+  #q-container .q-text { font-size: 16px; font-weight: 500; margin-bottom: 20px; line-height: 1.5; color: var(--text); }
+  #q-container .q-points { font-family: var(--mono); font-size: 11px; color: var(--accent); background: var(--accent-bg); padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
 
   .opt-list { display: flex; flex-direction: column; gap: 8px; }
   .opt-item {
@@ -147,38 +156,56 @@
   textarea.subj {
     width: 100%; font-family: var(--sans); font-size: 14.5px; padding: 12px 14px;
     border: 1px solid var(--border); border-radius: 8px; background: var(--bg-card); color: var(--text);
-    min-height: 110px; resize: vertical; line-height: 1.5;
+    min-height: 150px; resize: vertical; line-height: 1.5;
   }
   textarea.subj:focus, select.dd:focus { outline: none; border-color: var(--accent); }
 
-  .dnd-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; flex-wrap: wrap; }
-  .dnd-target { font-family: var(--mono); font-size: 13.5px; font-weight: 600; min-width: 130px; color: var(--text); }
-  .dnd-arrow { color: var(--text-faint); }
-  .dnd-pool {
-    display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 22px;
+  /* Glise-depoze pou yon sèl kesyon -- examen_reseau_v2 */
+  #q-container .dnd-target { font-family: var(--mono); font-size: 15px; font-weight: 700; margin: 16px 0 8px; color: var(--text); }
+  #q-container .dnd-pool {
+    display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 16px;
     padding: 14px; background: var(--accent-bg); border-radius: 8px; border: 1px dashed var(--accent);
   }
-  .dnd-chip {
+  #q-container .dnd-chip {
     font-family: var(--mono); font-size: 12.5px; background: var(--bg-card); border: 1px solid var(--border);
     padding: 7px 14px; border-radius: 16px; cursor: grab; user-select: none; color: var(--text);
   }
-  .dnd-chip.placed { opacity: 0.3; cursor: default; }
-  .dnd-slot {
-    min-width: 260px; min-height: 38px; border: 1.5px dashed var(--border); border-radius: 8px;
-    padding: 6px 12px; display: flex; align-items: center; font-family: var(--mono); font-size: 12.5px;
+  #q-container .dnd-chip.placed { opacity: 0.3; cursor: default; }
+  #q-container .dnd-slot {
+    min-height: 42px; border: 1.5px dashed var(--border); border-radius: 8px;
+    padding: 8px 14px; display: flex; align-items: center; font-family: var(--mono); font-size: 13px;
     color: var(--text-faint); transition: border-color 0.15s, background 0.15s;
   }
-  .dnd-slot.over { border-color: var(--accent); background: var(--accent-bg); }
-  .dnd-slot.filled { border-style: solid; border-color: var(--accent-dim); color: var(--text); background: var(--accent-bg); }
+  #q-container .dnd-slot.over { border-color: var(--accent); background: var(--accent-bg); }
+  #q-container .dnd-slot.filled { border-style: solid; border-color: var(--accent-dim); color: var(--text); background: var(--accent-bg); }
 
-  #submit-zone { text-align: center; margin-top: 40px; }
-  #submit-btn {
+  /* Navigasyon -- examen_reseau_v2 */
+  #nav-zone { text-align: right; margin-top: 28px; }
+  #next-btn {
     font-family: var(--sans); font-weight: 600; font-size: 15px;
     background: var(--accent); color: #06231A; border: none;
-    padding: 16px 40px; border-radius: 8px; cursor: pointer;
+    padding: 14px 36px; border-radius: 8px; cursor: pointer; transition: opacity 0.15s;
   }
-  #submit-btn:hover { opacity: 0.9; }
-  #submit-note { font-size: 13px; color: var(--text-faint); margin-top: 10px; }
+  #next-btn:hover:not(:disabled) { opacity: 0.9; }
+  #next-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* Ekran résumé -- examen_reseau_v2 */
+  #screen-summary { display: none; }
+  #screen-summary h2 { font-size: 22px; font-weight: 700; margin-bottom: 24px; }
+  .summary-q {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px 18px; margin-bottom: 10px; font-size: 14px; line-height: 1.5;
+  }
+  .summary-q .sq-label { font-family: var(--mono); font-size: 11px; color: var(--text-faint); margin-bottom: 4px; }
+  .summary-q .sq-answer { color: var(--text); }
+  .summary-q .sq-empty { color: var(--text-faint); font-style: italic; }
+  #summary-actions { text-align: center; margin-top: 32px; }
+  #summary-actions #submit-btn {
+    font-family: var(--sans); font-weight: 600; font-size: 15px;
+    background: var(--accent); color: #06231A; border: none;
+    padding: 16px 48px; border-radius: 8px; cursor: pointer;
+  }
+  #summary-actions #submit-btn:hover { opacity: 0.9; }
 
   /* ===== ÉCRAN : FIN ===== */
   #screen-done { display: none; max-width: 560px; margin: 0 auto; padding: 90px 24px; text-align: center; }
