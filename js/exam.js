@@ -384,6 +384,7 @@ function startExam() {
 
   renderQCM(); renderVF(); renderDD(); renderDND(); renderMulti(); renderSubj();
   startTimer();
+  setTimeout(() => document.getElementById('exam-body')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
 /* ============================================================
@@ -487,8 +488,41 @@ function collectSubjective() {
 let lastEmailBody = '';
 let lastEmailSubject = '';
 
+function hasAnyAnswer() {
+  for (let i = 0; i < QCM.length; i++) {
+    if (document.querySelector(`input[name="qcm-${i}"]:checked`)) return true;
+  }
+  for (let i = 0; i < VF.length; i++) {
+    if (document.querySelector(`input[name="vf-${i}"]:checked`)) return true;
+  }
+  for (let i = 0; i < DD.length; i++) {
+    const sel = document.getElementById(`dd-${i}`);
+    if (sel && sel.value) return true;
+  }
+  for (let i = 0; i < DND.length; i++) {
+    const slot = document.getElementById(`slot-${i}`);
+    if (slot && slot.getAttribute('data-answer')) return true;
+  }
+  for (let qi = 0; qi < MULTI.length; qi++) {
+    const item = MULTI[qi];
+    for (let oi = 0; oi < item.opts.length; oi++) {
+      const cb = document.getElementById(`multi-cb-${qi}-${oi}`);
+      if (cb && cb.checked) return true;
+    }
+  }
+  for (let i = 0; i < SUBJ.length; i++) {
+    const el = document.getElementById(`subj-${i}`);
+    if (el && el.value.trim()) return true;
+  }
+  return false;
+}
+
 async function submitExam(autoSubmit) {
   if (examSubmitted) return;
+  if (!autoSubmit && !hasAnyAnswer()) {
+    alert('Vous devez répondre à au moins une question avant de soumettre.');
+    return;
+  }
   examSubmitted = true;
   if (timerInterval) clearInterval(timerInterval);
 
