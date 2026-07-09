@@ -226,159 +226,196 @@ const NETWORK_DIAGRAM_SVG = `
 </svg>`;
 
 /* ============================================================
-   RENDU DES QUESTIONS
+   NAVIGATION KESYON PA KESYON
    ============================================================ */
-function renderQCM() {
-  const c = document.getElementById('qcm-container');
-  let html = '';
-  QCM.forEach((item, i) => {
-    html += `<div class="q-card">`;
-    html += `<div class="q-num">Question A.${i+1}<span class="q-points">3 pts</span></div>`;
-    html += `<div class="q-text">${item.q}</div>`;
-    if (item.img === 'schema-reseau') {
-      html += `<div style="margin-bottom:16px">${NETWORK_DIAGRAM_SVG}</div>`;
-    } else if (item.img === 'ipv6') {
-      /* Afiche SVG IPv6 la -- examen_reseau_v2 */
-      html += `<div style="margin-bottom:16px;text-align:center">${IPV6_DIAGRAM_SVG}</div>`;
-    }
-    html += `<div class="opt-list">`;
-    item.opts.forEach((opt, j) => {
-      html += `<div class="opt-item" id="qcm-${i}-${j}" onclick="selectRadio('qcm',${i},${j})">`;
-      html += `<input type="radio" name="qcm-${i}" value="${j}">`;
-      html += `<label>${opt}</label></div>`;
-    });
-    html += `</div></div>`;
-  });
-  c.innerHTML = html;
+const QUESTIONS = [];
+QCM.forEach((q, i) => QUESTIONS.push({ ...q, section: 'A', type: 'qcm', sIdx: i }));
+VF.forEach((q, i) => QUESTIONS.push({ ...q, section: 'B', type: 'vf', sIdx: i }));
+DD.forEach((q, i) => QUESTIONS.push({ ...q, section: 'C', type: 'dd', sIdx: i }));
+DND.forEach((q, i) => QUESTIONS.push({ ...q, section: 'D', type: 'dnd', sIdx: i }));
+MULTI.forEach((q, i) => QUESTIONS.push({ ...q, section: 'E', type: 'multi', sIdx: i }));
+SUBJ.forEach((q, i) => QUESTIONS.push({ ...q, section: 'F', type: 'subj', sIdx: i }));
+
+let currentQ = 0;
+let userAnswers = {};
+
+const SECTION_LABELS = {
+  A: 'Section A \u2014 Questions \u00e0 choix multiple',
+  B: 'Section B \u2014 Vrai ou Faux',
+  C: 'Section C \u2014 Liste d\u00e9roulante',
+  D: 'Section D \u2014 Glisser-d\u00e9poser : \u00e9quipement et fonction',
+  E: 'Section E \u2014 Choix multiples (plusieurs r\u00e9ponses correctes)',
+  F: 'Section F \u2014 Questions de d\u00e9finition et de r\u00e9flexion',
+};
+
+function updateProgress() {
+  let answered = 0;
+  for (let i = 0; i < currentQ; i++) {
+    const a = userAnswers[i];
+    if (a !== undefined && a !== null && a !== '' && !(Array.isArray(a) && a.length === 0)) answered++;
+  }
+  const fill = document.getElementById('progress-fill');
+  const txt = document.getElementById('progress-text');
+  if (fill) fill.style.width = (answered / QUESTIONS.length * 100) + '%';
+  if (txt) txt.textContent = (currentQ + 1) + ' / ' + QUESTIONS.length;
 }
 
-function renderVF() {
-  const c = document.getElementById('vf-container');
-  let html = '';
-  VF.forEach((item, i) => {
-    html += `<div class="q-card">`;
-    html += `<div class="q-num">Question B.${i+1}<span class="q-points">2 pts</span></div>`;
-    html += `<div class="q-text">${item.q}</div>`;
-    html += `<div class="opt-list">`;
-    ["Vrai", "Faux"].forEach((opt, j) => {
-      html += `<div class="opt-item" id="vf-${i}-${j}" onclick="selectRadio('vf',${i},${j})">`;
-      html += `<input type="radio" name="vf-${i}" value="${opt}">`;
-      html += `<label>${opt}</label></div>`;
-    });
-    html += `</div></div>`;
-  });
-  c.innerHTML = html;
+function updateNextBtn() {
+  const btn = document.getElementById('next-btn');
+  if (!btn) return;
+  const a = userAnswers[currentQ];
+  let has = false;
+  const q = QUESTIONS[currentQ];
+  if (q.type === 'multi') { has = Array.isArray(a) && a.length > 0; }
+  else if (q.type === 'dnd') { has = typeof a === 'string' && a.trim() !== ''; }
+  else { has = a !== undefined && a !== null && a !== ''; }
+  btn.disabled = !has;
+  btn.textContent = currentQ === QUESTIONS.length - 1 ? 'Voir le r\u00e9sum\u00e9' : 'Question suivante';
 }
 
-function renderDD() {
-  const c = document.getElementById('dd-container');
-  let html = '';
-  DD.forEach((item, i) => {
-    html += `<div class="q-card">`;
-    html += `<div class="q-num">Question C.${i+1}<span class="q-points">1 pt</span></div>`;
-    html += `<div class="q-text">${item.q}</div>`;
-    html += `<select class="dd" id="dd-${i}">`;
-    html += `<option value="">— Choisir une réponse —</option>`;
-    item.options.forEach(o => { html += `<option value="${o}">${o}</option>`; });
-    html += `</select></div>`;
-  });
-  c.innerHTML = html;
-}
-
-function renderDND() {
-  const c = document.getElementById('dnd-container');
-  const allChips = [...DND.map(d => d.ans), ...DND_DECOYS];
-  const shuffledChips = allChips.sort(() => Math.random() - 0.5);
+function renderQuestion(idx) {
+  const q = QUESTIONS[idx];
+  const container = document.getElementById('q-container');
+  const label = document.getElementById('q-section-label');
+  label.textContent = SECTION_LABELS[q.section] || '';
 
   let html = `<div class="q-card">`;
-  html += `<div class="q-text">Glissez chaque description dans la case correspondant au bon équipement. Attention : il y a plus de descriptions que de cases.</div>`;
-  html += `<div class="dnd-pool" id="dnd-pool">`;
-  shuffledChips.forEach((chip, i) => {
-    html += `<div class="dnd-chip" id="chip-${i}" draggable="true" data-text="${chip.replace(/"/g, '&quot;')}" ondragstart="dragStart(event,${i})">${chip}</div>`;
-  });
-  html += `</div>`;
-
-  DND.forEach((item, i) => {
-    html += `<div class="dnd-row">`;
-    html += `<div class="dnd-target">${item.target}</div>`;
-    html += `<div class="dnd-arrow">→</div>`;
-    html += `<div class="dnd-slot" id="slot-${i}" ondragover="dragOver(event)" ondrop="dropChip(event,${i})" data-target="${item.target}">Déposez ici</div>`;
+  html += `<div class="q-num">${q.section}.${q.sIdx + 1}</div>`;
+  html += `<div class="q-text">${q.q}`;
+  if (q.img === 'schema-reseau') {
+    html += `</div><div style="margin-bottom:16px">${NETWORK_DIAGRAM_SVG}</div>`;
+  } else if (q.img === 'ipv6') {
+    html += `</div><div style="margin-bottom:16px;text-align:center">${IPV6_DIAGRAM_SVG}</div>`;
+  } else {
     html += `</div>`;
-  });
-  html += `</div>`;
-  c.innerHTML = html;
-}
+  }
 
-let draggedChipIndex = null;
-let chipTexts = {};
-
-function dragStart(ev, idx) {
-  draggedChipIndex = idx;
-  chipTexts[idx] = ev.target.getAttribute('data-text');
-}
-function dragOver(ev) { ev.preventDefault(); ev.currentTarget.classList.add('over'); }
-function dropChip(ev, slotIdx) {
-  ev.preventDefault();
-  const slot = document.getElementById('slot-' + slotIdx);
-  slot.classList.remove('over');
-  if (draggedChipIndex === null) return;
-  const text = chipTexts[draggedChipIndex];
-  slot.textContent = text;
-  slot.classList.add('filled');
-  slot.setAttribute('data-answer', text);
-  const chipEl = document.getElementById('chip-' + draggedChipIndex);
-  if (chipEl) chipEl.classList.add('placed');
-  draggedChipIndex = null;
-}
-
-function renderMulti() {
-  const c = document.getElementById('multi-container');
-  let html = '';
-  MULTI.forEach((item, qi) => {
-    html += `<div class="q-card">`;
-    html += `<div class="q-num">Question E.${qi+1}<span class="q-points">2 pts</span></div>`;
-    html += `<div class="q-text">${item.q}<br><span style="color:var(--text-faint);font-size:12.5px">(plusieurs réponses possibles)</span></div>`;
+  if (q.type === 'qcm' || q.type === 'vf') {
+    const opts = q.type === 'vf' ? ['Vrai', 'Faux'] : q.opts;
     html += `<div class="opt-list">`;
-    item.opts.forEach((opt, oi) => {
-      html += `<div class="opt-item" id="multi-${qi}-${oi}" onclick="toggleCheckbox(${qi},${oi})">`;
-      html += `<input type="checkbox" id="multi-cb-${qi}-${oi}" value="${opt}">`;
+    opts.forEach((opt, j) => {
+      const ck = userAnswers[idx] === opt ? ' checked' : '';
+      html += `<div class="opt-item${ck}" id="q-${idx}-${j}" onclick="selOpt(${idx},${j})">`;
+      html += `<input type="radio" name="q-${idx}" value="${opt}"${ck ? ' checked' : ''}>`;
       html += `<label>${opt}</label></div>`;
     });
-    html += `</div></div>`;
-  });
-  c.innerHTML = html;
-}
-
-function toggleCheckbox(qi, oi) {
-  const cb = document.getElementById(`multi-cb-${qi}-${oi}`);
-  cb.checked = !cb.checked;
-  const item = document.getElementById(`multi-${qi}-${oi}`);
-  item.classList.toggle('checked', cb.checked);
-}
-
-function renderSubj() {
-  const c = document.getElementById('subj-container');
-  let html = '';
-  SUBJ.forEach((item, i) => {
-    html += `<div class="q-card">`;
-    html += `<div class="q-num">Question F.${i+1}<span class="q-points">${item.pts} pts</span></div>`;
-    html += `<div class="q-text">${item.q}</div>`;
-    html += `<textarea class="subj" id="subj-${i}" placeholder="Votre réponse..."></textarea>`;
     html += `</div>`;
-  });
-  c.innerHTML = html;
+  } else if (q.type === 'dd') {
+    html += `<select class="dd" id="q-${idx}" onchange="ansDD(${idx},this.value)">`;
+    html += `<option value="">\u2014 Choisir une r\u00e9ponse \u2014</option>`;
+    q.options.forEach(o => {
+      html += `<option value="${o}"${userAnswers[idx] === o ? ' selected' : ''}>${o}</option>`;
+    });
+    html += `</select>`;
+  } else if (q.type === 'dnd') {
+    const allChips = [...DND.map(d => d.ans), ...DND_DECOYS];
+    const used = userAnswers[idx] || '';
+    html += `<div class="dnd-target">\u00c9quipement : ${q.target}</div>`;
+    html += `<div class="dnd-pool" id="dnd-pool-${idx}">`;
+    allChips.forEach((chip, ci) => {
+      const pl = chip === used;
+      html += `<div class="dnd-chip${pl ? ' placed' : ''}" id="dnd-chip-${idx}-${ci}" draggable="${!pl}" data-text="${chip.replace(/"/g, '&quot;')}" ondragstart="dragStartSingle(event,${idx},${ci})">${chip}</div>`;
+    });
+    html += `</div>`;
+    html += `<div class="dnd-slot${used ? ' filled' : ''}" id="dnd-slot-${idx}" ondragover="dragOverSingle(event)" ondrop="dropSingle(event,${idx})">${used || 'D\u00e9posez la description ici'}</div>`;
+  } else if (q.type === 'multi') {
+    html += `<div class="opt-list">`;
+    q.opts.forEach((opt, oi) => {
+      const ck = Array.isArray(userAnswers[idx]) && userAnswers[idx].includes(opt);
+      html += `<div class="opt-item${ck ? ' checked' : ''}" id="q-${idx}-${oi}" onclick="selMulti(${idx},${oi})">`;
+      html += `<input type="checkbox" id="cb-${idx}-${oi}" value="${opt}"${ck ? ' checked' : ''}>`;
+      html += `<label>${opt}</label></div>`;
+    });
+    html += `</div>`;
+  } else if (q.type === 'subj') {
+    html += `<textarea class="subj" id="q-${idx}" oninput="ansSubj(${idx},this.value)" placeholder="Votre r\u00e9ponse...">${userAnswers[idx] || ''}</textarea>`;
+  }
+
+  html += `</div>`;
+  container.innerHTML = html;
+  updateNextBtn();
+  updateProgress();
 }
 
-/* Fèmen modal pop-up la -- examen_reseau_v2 */
+function selOpt(idx, oi) {
+  const q = QUESTIONS[idx];
+  const opts = q.type === 'vf' ? ['Vrai', 'Faux'] : q.opts;
+  userAnswers[idx] = opts[oi];
+  document.querySelectorAll(`#q-container [id^="q-${idx}-"]`).forEach(el => el.classList.remove('checked'));
+  const el = document.getElementById(`q-${idx}-${oi}`);
+  if (el) { el.classList.add('checked'); el.querySelector('input').checked = true; }
+  updateNextBtn();
+}
+
+function selMulti(idx, oi) {
+  const q = QUESTIONS[idx];
+  if (!Array.isArray(userAnswers[idx])) userAnswers[idx] = [];
+  const opt = q.opts[oi];
+  const p = userAnswers[idx].indexOf(opt);
+  if (p >= 0) userAnswers[idx].splice(p, 1); else userAnswers[idx].push(opt);
+  const el = document.getElementById(`q-${idx}-${oi}`);
+  const cb = document.getElementById(`cb-${idx}-${oi}`);
+  if (el) el.classList.toggle('checked');
+  if (cb) cb.checked = !cb.checked;
+  updateNextBtn();
+}
+
+function ansDD(idx, val) { userAnswers[idx] = val || ''; updateNextBtn(); }
+function ansSubj(idx, val) { userAnswers[idx] = val; updateNextBtn(); }
+
+let draggedSingle = null;
+function dragStartSingle(ev, idx, ci) {
+  if (ev.target.classList.contains('placed')) return;
+  draggedSingle = { idx, ci, text: ev.target.getAttribute('data-text') };
+}
+function dragOverSingle(ev) { ev.preventDefault(); if (ev.currentTarget) ev.currentTarget.classList.add('over'); }
+function dropSingle(ev, idx) {
+  ev.preventDefault();
+  const slot = document.getElementById(`dnd-slot-${idx}`);
+  if (!slot) return;
+  slot.classList.remove('over');
+  if (!draggedSingle || draggedSingle.idx !== idx) return;
+  if (userAnswers[idx]) {
+    document.querySelectorAll(`#dnd-pool-${idx} .dnd-chip`).forEach(c => {
+      if (c.getAttribute('data-text') === userAnswers[idx]) { c.classList.remove('placed'); c.draggable = true; }
+    });
+  }
+  userAnswers[idx] = draggedSingle.text;
+  slot.textContent = draggedSingle.text;
+  slot.classList.add('filled');
+  const chipEl = document.getElementById(`dnd-chip-${idx}-${draggedSingle.ci}`);
+  if (chipEl) { chipEl.classList.add('placed'); chipEl.draggable = false; }
+  draggedSingle = null;
+  updateNextBtn();
+}
+
+/* F�men modal pop-up la -- examen_reseau_v2 */
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
 }
 
-function selectRadio(group, qIdx, optIdx) {
-  document.querySelectorAll(`[id^="${group}-${qIdx}-"]`).forEach(el => el.classList.remove('checked'));
-  const el = document.getElementById(`${group}-${qIdx}-${optIdx}`);
-  el.classList.add('checked');
-  el.querySelector('input').checked = true;
+function goNext() {
+  if (currentQ < QUESTIONS.length - 1) { currentQ++; renderQuestion(currentQ); }
+  else showSummary();
+}
+
+function showSummary() {
+  document.getElementById('q-section-label').style.display = 'none';
+  document.getElementById('q-container').style.display = 'none';
+  document.getElementById('nav-zone').style.display = 'none';
+  const sum = document.getElementById('screen-summary');
+  sum.style.display = 'block';
+  let h = '';
+  QUESTIONS.forEach((q, i) => {
+    const a = userAnswers[i];
+    let t = '';
+    if (q.type === 'multi') t = Array.isArray(a) && a.length > 0 ? a.join(', ') : '';
+    else t = (a && a.toString().trim()) || '';
+    if (!t) { t = '(sans réponse)'; }
+    h += `<div class="summary-q"><div class="sq-label">${q.section}.${q.sIdx + 1}</div><div class="${t === '(sans réponse)' ? 'sq-empty' : 'sq-answer'}">${t}</div></div>`;
+  });
+  document.getElementById('summary-content').innerHTML = h;
+  updateProgress();
 }
 
 /* ============================================================
@@ -392,9 +429,14 @@ function startExam() {
   document.getElementById('screen-intro').style.display = 'none';
   document.getElementById('screen-exam').classList.add('show');
 
-  renderQCM(); renderVF(); renderDD(); renderDND(); renderMulti(); renderSubj();
+  currentQ = 0;
+  userAnswers = {};
+  document.getElementById('q-section-label').style.display = 'block';
+  document.getElementById('q-container').style.display = 'block';
+  document.getElementById('nav-zone').style.display = 'block';
+  document.getElementById('screen-summary').style.display = 'none';
+  renderQuestion(0);
   startTimer();
-  /* Scroll otomatik pou etidyan wè Seksyon A dirèkteman -- examen_reseau_v2 */
   setTimeout(() => document.getElementById('exam-body')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
@@ -429,55 +471,43 @@ function updateTimerDisplay() {
 async function gradeObjective() {
   let score = 0;
   let detail = [];
+  let qi = 0;
 
-  for (let i = 0; i < QCM.length; i++) {
-    const checked = document.querySelector(`input[name="qcm-${i}"]:checked`);
-    const userAns = checked ? QCM[i].opts[parseInt(checked.value)] : null;
+  for (let i = 0; i < QCM.length; i++, qi++) {
+    const userAns = userAnswers[qi] || null;
     const userHash = userAns ? await sha256(userAns) : null;
     const correct = userHash === QCM[i].hash;
     if (correct) score += 3;
-    detail.push(`A.${i+1}: ${userAns || '(sans réponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
+    detail.push(`A.${i+1}: ${userAns || '(sans r�ponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
   }
-
-  for (let i = 0; i < VF.length; i++) {
-    const checked = document.querySelector(`input[name="vf-${i}"]:checked`);
-    const userAns = checked ? checked.value : null;
+  for (let i = 0; i < VF.length; i++, qi++) {
+    const userAns = userAnswers[qi] || null;
     const userHash = userAns ? await sha256(userAns) : null;
     const correct = userHash === VF[i].hash;
     if (correct) score += 2;
-    detail.push(`B.${i+1}: ${userAns || '(sans réponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
+    detail.push(`B.${i+1}: ${userAns || '(sans r�ponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
   }
-
-  for (let i = 0; i < DD.length; i++) {
-    const sel = document.getElementById(`dd-${i}`);
-    const userAns = sel ? sel.value : null;
+  for (let i = 0; i < DD.length; i++, qi++) {
+    const userAns = userAnswers[qi] || null;
     const userHash = userAns ? await sha256(userAns) : null;
     const correct = userHash === DD[i].hash;
     if (correct) score += 1;
-    detail.push(`C.${i+1}: ${userAns || '(sans réponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
+    detail.push(`C.${i+1}: ${userAns || '(sans r�ponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
   }
-
-  for (let i = 0; i < DND.length; i++) {
-    const slot = document.getElementById(`slot-${i}`);
-    const userAns = slot ? slot.getAttribute('data-answer') : null;
+  for (let i = 0; i < DND.length; i++, qi++) {
+    const userAns = userAnswers[qi] || null;
     const userHash = userAns ? await sha256(userAns) : null;
     const correct = userHash === DND[i].hash;
     if (correct) score += 1;
-    detail.push(`D (${DND[i].target}): ${userAns || '(sans réponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
+    detail.push(`D (${DND[i].target}): ${userAns || '(sans r�ponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
   }
-
-  for (let qi = 0; qi < MULTI.length; qi++) {
-    const item = MULTI[qi];
-    let userSelected = [];
-    item.opts.forEach((opt, oi) => {
-      const cb = document.getElementById(`multi-cb-${qi}-${oi}`);
-      if (cb && cb.checked) userSelected.push(opt);
-    });
-    const correctSet = new Set(item.ans);
+  for (let qi2 = 0; qi2 < MULTI.length; qi2++, qi++) {
+    const userSelected = Array.isArray(userAnswers[qi]) ? userAnswers[qi] : [];
+    const correctSet = new Set(MULTI[qi2].ans);
     const userSet = new Set(userSelected);
     const isExactMatch = correctSet.size === userSet.size && [...correctSet].every(a => userSet.has(a));
     if (isExactMatch) score += 2;
-    detail.push(`E.${qi+1}: ${userSelected.join(', ') || '(sans réponse)'} ${isExactMatch ? '[correct]' : '[incorrect]'}`);
+    detail.push(`E.${qi2+1}: ${userSelected.join(', ') || '(sans r�ponse)'} ${isExactMatch ? '[correct]' : '[incorrect]'}`);
   }
 
   return { score, detail };
@@ -485,10 +515,10 @@ async function gradeObjective() {
 
 function collectSubjective() {
   let answers = [];
+  let qi = QCM.length + VF.length + DD.length + DND.length + MULTI.length;
   SUBJ.forEach((item, i) => {
-    const el = document.getElementById(`subj-${i}`);
-    const val = el ? el.value.trim() : '';
-    answers.push(`F.${i+1} (${item.pts} pts) — ${item.q}\n${val || '(sans réponse)'}`);
+    const val = userAnswers[qi + i] || '';
+    answers.push(`F.${i+1} (${item.pts} pts) ${item.q}\n${val || '(sans r�ponse)'}`);
   });
   return answers;
 }
@@ -501,30 +531,9 @@ let lastEmailSubject = '';
 
 /* Tcheke si etidyan an reponn omwen 1 kesyon -- examen_reseau_v2 */
 function hasAnyAnswer() {
-  for (let i = 0; i < QCM.length; i++) {
-    if (document.querySelector(`input[name="qcm-${i}"]:checked`)) return true;
-  }
-  for (let i = 0; i < VF.length; i++) {
-    if (document.querySelector(`input[name="vf-${i}"]:checked`)) return true;
-  }
-  for (let i = 0; i < DD.length; i++) {
-    const sel = document.getElementById(`dd-${i}`);
-    if (sel && sel.value) return true;
-  }
-  for (let i = 0; i < DND.length; i++) {
-    const slot = document.getElementById(`slot-${i}`);
-    if (slot && slot.getAttribute('data-answer')) return true;
-  }
-  for (let qi = 0; qi < MULTI.length; qi++) {
-    const item = MULTI[qi];
-    for (let oi = 0; oi < item.opts.length; oi++) {
-      const cb = document.getElementById(`multi-cb-${qi}-${oi}`);
-      if (cb && cb.checked) return true;
-    }
-  }
-  for (let i = 0; i < SUBJ.length; i++) {
-    const el = document.getElementById(`subj-${i}`);
-    if (el && el.value.trim()) return true;
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    const a = userAnswers[i];
+    if (a !== undefined && a !== null && a !== '' && !(Array.isArray(a) && a.length === 0)) return true;
   }
   return false;
 }
