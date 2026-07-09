@@ -392,9 +392,6 @@ function updateProgress() {
   if (fill) fill.style.width = pct + '%';
   if (txt) txt.textContent = answered + ' / ' + total;
 }
-    }
-  });
-}
 
 function selectRadio(group, qIdx, optIdx) {
   document.querySelectorAll(`[id^="${group}-${qIdx}-"]`).forEach(el => el.classList.remove('checked'));
