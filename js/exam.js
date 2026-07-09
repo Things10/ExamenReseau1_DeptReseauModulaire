@@ -226,7 +226,7 @@ const NETWORK_DIAGRAM_SVG = `
 </svg>`;
 
 /* ============================================================
-   NAVIGATION KESYON PA KESYON
+   NAVIGATION PA SEKSYON (tout kesyon nan seksyon an vizib)
    ============================================================ */
 const QUESTIONS = [];
 QCM.forEach((q, i) => QUESTIONS.push({ ...q, section: 'A', type: 'qcm', sIdx: i }));
@@ -236,7 +236,8 @@ DND.forEach((q, i) => QUESTIONS.push({ ...q, section: 'D', type: 'dnd', sIdx: i 
 MULTI.forEach((q, i) => QUESTIONS.push({ ...q, section: 'E', type: 'multi', sIdx: i }));
 SUBJ.forEach((q, i) => QUESTIONS.push({ ...q, section: 'F', type: 'subj', sIdx: i }));
 
-let currentQ = 0;
+const SECTIONS = ['A','B','C','D','E','F'];
+let currentSectionIdx = 0;
 let userAnswers = {};
 
 const SECTION_LABELS = {
@@ -249,37 +250,25 @@ const SECTION_LABELS = {
 };
 
 function updateProgress() {
-  let answered = 0;
-  for (let i = 0; i < currentQ; i++) {
-    const a = userAnswers[i];
-    if (a !== undefined && a !== null && a !== '' && !(Array.isArray(a) && a.length === 0)) answered++;
-  }
   const fill = document.getElementById('progress-fill');
   const txt = document.getElementById('progress-text');
-  if (fill) fill.style.width = (answered / QUESTIONS.length * 100) + '%';
-  if (txt) txt.textContent = (currentQ + 1) + ' / ' + QUESTIONS.length;
+  if (fill) fill.style.width = (currentSectionIdx / SECTIONS.length * 100) + '%';
+  if (txt) txt.textContent = 'Section ' + SECTIONS[currentSectionIdx] + ' / F';
 }
 
-function updateNextBtn() {
-  const btn = document.getElementById('next-btn');
-  if (!btn) return;
-  const a = userAnswers[currentQ];
-  let has = false;
-  const q = QUESTIONS[currentQ];
-  if (q.type === 'multi') { has = Array.isArray(a) && a.length > 0; }
-  else if (q.type === 'dnd') { has = typeof a === 'string' && a.trim() !== ''; }
-  else { has = a !== undefined && a !== null && a !== ''; }
-  btn.disabled = !has;
-  btn.textContent = currentQ === QUESTIONS.length - 1 ? 'Voir le r\u00e9sum\u00e9' : 'Question suivante';
+function updateNavButtons() {
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  if (prevBtn) prevBtn.disabled = currentSectionIdx === 0;
+  if (nextBtn) {
+    nextBtn.disabled = false;
+    nextBtn.textContent = currentSectionIdx === SECTIONS.length - 1
+      ? 'Voir le r\u00e9sum\u00e9'
+      : 'Section suivante';
+  }
 }
 
-function renderQuestion(idx, viewOnly) {
-  const q = QUESTIONS[idx];
-  const container = document.getElementById('q-container');
-  const label = document.getElementById('q-section-label');
-  label.textContent = SECTION_LABELS[q.section] || '';
-  container.className = viewOnly ? 'view-only' : '';
-
+function buildQuestionHTML(idx, q) {
   let html = `<div class="q-card">`;
   html += `<div class="q-num">${q.section}.${q.sIdx + 1}</div>`;
   html += `<div class="q-text">${q.q}`;
@@ -293,18 +282,16 @@ function renderQuestion(idx, viewOnly) {
 
   if (q.type === 'qcm' || q.type === 'vf') {
     const opts = q.type === 'vf' ? ['Vrai', 'Faux'] : q.opts;
-    const dis = viewOnly ? ' disabled' : '';
     html += `<div class="opt-list">`;
     opts.forEach((opt, j) => {
       const ck = userAnswers[idx] === opt ? ' checked' : '';
-      html += `<div class="opt-item${ck}" id="q-${idx}-${j}" ${viewOnly ? '' : `onclick="selOpt(${idx},${j})"`}>`;
-      html += `<input type="radio" name="q-${idx}" value="${opt}"${ck ? ' checked' : ''}${dis}>`;
+      html += `<div class="opt-item${ck}" id="q-${idx}-${j}" onclick="selOpt(${idx},${j})">`;
+      html += `<input type="radio" name="q-${idx}" value="${opt}"${ck ? ' checked' : ''}>`;
       html += `<label>${opt}</label></div>`;
     });
     html += `</div>`;
   } else if (q.type === 'dd') {
-    const dis = viewOnly ? ' disabled' : '';
-    html += `<select class="dd" id="q-${idx}"${viewOnly ? '' : ` onchange="ansDD(${idx},this.value)"`}${dis}>`;
+    html += `<select class="dd" id="q-${idx}" onchange="ansDD(${idx},this.value)">`;
     html += `<option value="">\u2014 Choisir une r\u00e9ponse \u2014</option>`;
     q.options.forEach(o => {
       html += `<option value="${o}"${userAnswers[idx] === o ? ' selected' : ''}>${o}</option>`;
@@ -318,32 +305,67 @@ function renderQuestion(idx, viewOnly) {
     html += `<div class="dnd-pool" id="dnd-pool-${idx}">`;
     allChips.forEach((chip, ci) => {
       const pl = chip === used;
-      html += `<div class="dnd-chip${pl ? ' placed' : ''}" id="dnd-chip-${idx}-${ci}"${viewOnly ? '' : ` draggable="${!pl}" data-text="${chip.replace(/"/g, '&quot;')}" ondragstart="dragStartSingle(event,${idx},${ci})"`}>${chip}</div>`;
+      html += `<div class="dnd-chip${pl ? ' placed' : ''}" id="dnd-chip-${idx}-${ci}" draggable="${!pl}" data-text="${chip.replace(/"/g, '&quot;')}" ondragstart="dragStartSingle(event,${idx},${ci})">${chip}</div>`;
     });
     html += `</div></div>`;
-    html += `<div class="dnd-slot${used ? ' filled' : ''}" id="dnd-slot-${idx}"${viewOnly ? '' : ' ondragover="dragOverSingle(event)" ondrop="dropSingle(event,' + idx + ')"'}>${(used && used !== 'undefined') ? used : 'D\u00e9posez la description ici'}</div>`;
+    html += `<div class="dnd-slot${used ? ' filled' : ''}" id="dnd-slot-${idx}" ondragover="dragOverSingle(event)" ondrop="dropSingle(event,${idx})">${(used && used !== 'undefined') ? used : 'D\u00e9posez la description ici'}</div>`;
   } else if (q.type === 'multi') {
-    const dis = viewOnly ? ' disabled' : '';
     html += `<div class="opt-list">`;
     q.opts.forEach((opt, oi) => {
       const ck = Array.isArray(userAnswers[idx]) && userAnswers[idx].includes(opt);
-      html += `<div class="opt-item${ck ? ' checked' : ''}" id="q-${idx}-${oi}" ${viewOnly ? '' : `onclick="selMulti(${idx},${oi})"`}>`;
-      html += `<input type="checkbox" id="cb-${idx}-${oi}" value="${opt}"${ck ? ' checked' : ''}${dis}>`;
+      html += `<div class="opt-item${ck ? ' checked' : ''}" id="q-${idx}-${oi}" onclick="selMulti(${idx},${oi})">`;
+      html += `<input type="checkbox" id="cb-${idx}-${oi}" value="${opt}"${ck ? ' checked' : ''}>`;
       html += `<label>${opt}</label></div>`;
     });
     html += `</div>`;
   } else if (q.type === 'subj') {
-    const ro = viewOnly ? ' readonly' : '';
-    html += `<textarea class="subj" id="q-${idx}"${ro}${viewOnly ? '' : ` oninput="ansSubj(${idx},this.value)"`} placeholder="Votre r\u00e9ponse...">${userAnswers[idx] || ''}</textarea>`;
+    html += `<textarea class="subj" id="q-${idx}" oninput="ansSubj(${idx},this.value)" placeholder="Votre r\u00e9ponse...">${userAnswers[idx] || ''}</textarea>`;
   }
 
   html += `</div>`;
-  container.innerHTML = html;
-  updateNextBtn();
-  updatePrevBtn();
-  updateProgress();
+  return html;
 }
 
+function renderSection(sectionIdx) {
+  const section = SECTIONS[sectionIdx];
+  const container = document.getElementById('q-container');
+  const label = document.getElementById('q-section-label');
+  label.textContent = SECTION_LABELS[section] || '';
+  container.className = '';
+
+  let html = '';
+  QUESTIONS.forEach((q, idx) => {
+    if (q.section === section) html += buildQuestionHTML(idx, q);
+  });
+  container.innerHTML = html;
+  updateProgress();
+  updateNavButtons();
+}
+
+function goNext() {
+  if (currentSectionIdx < SECTIONS.length - 1) {
+    currentSectionIdx++;
+    renderSection(currentSectionIdx);
+  } else {
+    showSummary();
+  }
+}
+
+function goPrev() {
+  if (currentSectionIdx > 0) {
+    currentSectionIdx--;
+    renderSection(currentSectionIdx);
+  }
+}
+
+/* updatePrevBtn konsève pou compatibilité, men navigasyon pa seksyon itilize updateNavButtons */
+function updatePrevBtn() {
+  const btn = document.getElementById('prev-btn');
+  if (!btn) return;
+  btn.disabled = currentSectionIdx === 0;
+}
+
+/* === REZISTWA REPONS (itilize pa onclick/onchange nan HTML) === */
 function selOpt(idx, oi) {
   const q = QUESTIONS[idx];
   const opts = q.type === 'vf' ? ['Vrai', 'Faux'] : q.opts;
@@ -351,9 +373,7 @@ function selOpt(idx, oi) {
   document.querySelectorAll(`#q-container [id^="q-${idx}-"]`).forEach(el => el.classList.remove('checked'));
   const el = document.getElementById(`q-${idx}-${oi}`);
   if (el) { el.classList.add('checked'); el.querySelector('input').checked = true; }
-  updateNextBtn();
 }
-
 function selMulti(idx, oi) {
   const q = QUESTIONS[idx];
   if (!Array.isArray(userAnswers[idx])) userAnswers[idx] = [];
@@ -364,12 +384,11 @@ function selMulti(idx, oi) {
   const cb = document.getElementById(`cb-${idx}-${oi}`);
   if (el) el.classList.toggle('checked');
   if (cb) cb.checked = !cb.checked;
-  updateNextBtn();
 }
+function ansDD(idx, val) { userAnswers[idx] = val || ''; }
+function ansSubj(idx, val) { userAnswers[idx] = val; }
 
-function ansDD(idx, val) { userAnswers[idx] = val || ''; updateNextBtn(); }
-function ansSubj(idx, val) { userAnswers[idx] = val; updateNextBtn(); }
-
+/* === GLISSE-DEPOZE (DND) handlers === */
 let draggedSingle = null;
 function dragStartSingle(ev, idx, ci) {
   if (ev.target.classList.contains('placed')) return;
@@ -393,33 +412,16 @@ function dropSingle(ev, idx) {
   const chipEl = document.getElementById(`dnd-chip-${idx}-${draggedSingle.ci}`);
   if (chipEl) { chipEl.classList.add('placed'); chipEl.draggable = false; }
   draggedSingle = null;
-  updateNextBtn();
 }
 
 /* F�men modal pop-up la -- examen_reseau_v2 */
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
-  /* Retabli kontni modal la ak konsantre sou non an -- examen_reseau_v2 */
   document.querySelector('.modal-icon').textContent = '!';
   document.querySelector('.modal-title').textContent = 'Attention';
   document.querySelector('.modal-msg').innerHTML = 'Vous devez r�pondre � au moins une question avant de soumettre.';
   const ni = document.getElementById('student-name');
   if (ni) ni.focus();
-}
-
-function updatePrevBtn() {
-  const btn = document.getElementById('prev-btn');
-  if (!btn) return;
-  btn.disabled = currentQ === 0;
-}
-
-function goNext() {
-  if (currentQ < QUESTIONS.length - 1) { currentQ++; renderQuestion(currentQ, false); }
-  else showSummary();
-}
-
-function goPrev() {
-  if (currentQ > 0) { currentQ--; renderQuestion(currentQ, true); }
 }
 
 function showSummary() {
@@ -462,14 +464,14 @@ function startExam() {
   document.getElementById('screen-intro').style.display = 'none';
   document.getElementById('screen-exam').classList.add('show');
 
-  currentQ = 0;
+  currentSectionIdx = 0;
   userAnswers = {};
   document.getElementById('q-section-label').style.display = 'block';
   document.getElementById('q-container').style.display = 'block';
   document.getElementById('q-container').className = '';
   document.getElementById('nav-zone').style.display = 'block';
   document.getElementById('screen-summary').style.display = 'none';
-  renderQuestion(0);
+  renderSection(0);
   startTimer();
   setTimeout(() => document.getElementById('exam-body')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
