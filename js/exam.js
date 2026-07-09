@@ -329,7 +329,6 @@ function dropChip(ev, slotIdx) {
   const chipEl = document.getElementById('chip-' + draggedChipIndex);
   if (chipEl) chipEl.classList.add('placed');
   draggedChipIndex = null;
-  updateProgress();
 }
 
 function renderMulti() {
@@ -355,7 +354,6 @@ function toggleCheckbox(qi, oi) {
   cb.checked = !cb.checked;
   const item = document.getElementById(`multi-${qi}-${oi}`);
   item.classList.toggle('checked', cb.checked);
-  updateProgress();
 }
 
 function renderSubj() {
@@ -376,29 +374,11 @@ function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
 }
 
-/* Mete ajou bar pwogresyon liney (kesyon pa kesyon) -- examen_reseau_v2 */
-function updateProgress() {
-  let answered = 0;
-  const total = QCM.length + VF.length + DD.length + DND.length + MULTI.length + SUBJ.length;
-  QCM.forEach((_, i) => { if (document.querySelector(`input[name="qcm-${i}"]:checked`)) answered++; });
-  VF.forEach((_, i) => { if (document.querySelector(`input[name="vf-${i}"]:checked`)) answered++; });
-  DD.forEach((_, i) => { const s = document.getElementById(`dd-${i}`); if (s && s.value) answered++; });
-  DND.forEach((_, i) => { const s = document.getElementById(`slot-${i}`); if (s && s.getAttribute('data-answer')) answered++; });
-  MULTI.forEach((_, qi) => { if (MULTI[qi].opts.some((_, oi) => { const cb = document.getElementById(`multi-cb-${qi}-${oi}`); return cb && cb.checked; })) answered++; });
-  SUBJ.forEach((_, i) => { const el = document.getElementById(`subj-${i}`); if (el && el.value.trim()) answered++; });
-  const pct = total > 0 ? (answered / total) * 100 : 0;
-  const fill = document.getElementById('progress-fill');
-  const txt = document.getElementById('progress-text');
-  if (fill) fill.style.width = pct + '%';
-  if (txt) txt.textContent = answered + ' / ' + total;
-}
-
 function selectRadio(group, qIdx, optIdx) {
   document.querySelectorAll(`[id^="${group}-${qIdx}-"]`).forEach(el => el.classList.remove('checked'));
   const el = document.getElementById(`${group}-${qIdx}-${optIdx}`);
   el.classList.add('checked');
   el.querySelector('input').checked = true;
-  updateProgress();
 }
 
 /* ============================================================
@@ -413,9 +393,6 @@ function startExam() {
   document.getElementById('screen-exam').classList.add('show');
 
   renderQCM(); renderVF(); renderDD(); renderDND(); renderMulti(); renderSubj();
-  /* Attache evenman pou bar pwogresyon -- examen_reseau_v2 */
-  document.querySelectorAll('select.dd').forEach(el => el.addEventListener('change', updateProgress));
-  document.querySelectorAll('textarea.subj').forEach(el => el.addEventListener('input', updateProgress));
   startTimer();
   /* Scroll otomatik pou etidyan wè Seksyon A dirèkteman -- examen_reseau_v2 */
   setTimeout(() => document.getElementById('exam-body')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
