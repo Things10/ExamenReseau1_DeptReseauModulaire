@@ -284,7 +284,7 @@ function renderQuestion(idx, viewOnly) {
   html += `<div class="q-num">${q.section}.${q.sIdx + 1}</div>`;
   html += `<div class="q-text">${q.q}`;
   if (q.img === 'schema-reseau') {
-    html += `</div><div style="margin-bottom:16px">${NETWORK_DIAGRAM_SVG}</div>`;
+    html += `</div><div style="margin-bottom:16px;text-align:center">${NETWORK_DIAGRAM_SVG}</div>`;
   } else if (q.img === 'ipv6') {
     html += `</div><div style="margin-bottom:16px;text-align:center">${IPV6_DIAGRAM_SVG}</div>`;
   } else {
