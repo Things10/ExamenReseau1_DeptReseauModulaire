@@ -447,20 +447,13 @@ function showSummary() {
 function startExam() {
   const nameInput = document.getElementById('student-name');
   studentName = nameInput.value.trim();
-  if (!studentName) {
+
+  /* Yon sèl tchek: si non an vid oswa move fòma, montre menm pop-up la -- examen_reseau_v2 */
+  const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]+)*(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]+)*){1,}$/;
+  if (!studentName || !nameRegex.test(studentName)) {
     document.querySelector('.modal-icon').textContent = '!';
     document.querySelector('.modal-title').textContent = 'Nom requis';
-    document.querySelector('.modal-msg').innerHTML = 'Antre nonw konplè pou w aksede ak egzamen an.';
-    document.getElementById('modal-overlay').classList.add('show');
-    return;
-  }
-
-  /* Valide foma non an: omwen 2 mo, chak mo omwen 2 lèt, pa gen chif oswa karaktè espesyal -- examen_reseau_v2 */
-  const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]+)*(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]+)*){1,}$/;
-  if (!nameRegex.test(studentName)) {
-    document.querySelector('.modal-icon').textContent = '!';
-    document.querySelector('.modal-title').textContent = 'Format du nom';
-    document.querySelector('.modal-msg').innerHTML = 'Veuillez entrer votre nom complet (pr&eacute;nom et nom de famille).<br><br>Exemple&thinsp;: <strong>Jean Michel Dupont</strong><br><br>Les initiales comme <strong>GS</strong> ne sont pas accept&eacute;es.';
+    document.querySelector('.modal-msg').textContent = 'Veuillez entrer votre nom complet.';
     document.getElementById('modal-overlay').classList.add('show');
     return;
   }
