@@ -54,6 +54,7 @@
     border-radius: 50%; box-shadow: 0 0 0 4px var(--accent-bg);
   }
 
+  /* Logo CETEMOH ajoute nan paj dantre a -- examen_reseau_v2 */
   #logo-intro { display: block; max-width: 200px; margin-bottom: 20px; }
   #screen-intro h1 { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 14px; line-height: 1.15; }
   #screen-intro .lede { font-size: 16px; color: var(--text-dim); margin-bottom: 32px; max-width: 560px; }
@@ -108,6 +109,7 @@
   #timer.danger { background: var(--wrong-bg); color: var(--wrong); animation: pulse 1s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
+  /* scroll-margin-top ajoute pou header a pa kache seksyon A lè scrollIntoView -- examen_reseau_v2 */
   #exam-body { max-width: 760px; margin: 0 auto; padding: 32px 24px 100px; scroll-margin-top: 70px; }
 
   .section-divider {
@@ -199,6 +201,7 @@
   #fallback-textarea.show { display: block; }
 
   /* ===== MODAL POP-UP ===== */
+  /* Modal pou mesaj si etidyan pa reponn okenn kesyon -- examen_reseau_v2 */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 999;
     background: rgba(0,0,0,0.4); align-items: center; justify-content: center;

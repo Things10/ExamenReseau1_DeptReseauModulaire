@@ -33,11 +33,14 @@ const QCM = [
   { q: "Quelle topologie réseau relie tous les postes à un point central unique ?", opts: ["Bus", "Étoile", "Anneau", "Maillée"], hash: "" },
   { q: "Quelle technologie est utilisée pour l'identification sans contact par radiofréquence, courante en domotique ?", opts: ["Bluetooth", "RFID", "NFC", "Zigbee"], hash: "" },
   { q: "Dans le modèle TCP/IP (4 couches), quelle couche correspond aux couches 5, 6 et 7 du modèle OSI combinées ?", opts: ["Couche Accès réseau", "Couche Internet", "Couche Transport", "Couche Application"], hash: "" },
+  /* Nouvo kesyon A.11 sou IPv6 ajoute -- examen_reseau_v2 */
   { q: "Reportez-vous à l'illustration. Combien de bits sont représentés par chaque groupe de quatre valeurs hexadécimales contenues entre les deux points dans une adresse IPv6 ?", opts: ["8", "4", "64", "32", "16"], img: "ipv6", hash: "" },
 ];
 const QCM_ANSWERS = [
   "Étiquette RFID", "Données déduites", "Intermédiaire", "192.168.1.0", "8",
-  "Câble à paires torsadées (RJ-45)", "80", "Étoile", "RFID", "Couche Application", "16"
+  "Câble à paires torsadées (RJ-45)", "80", "Étoile", "RFID", "Couche Application",
+  /* Repons kesyon A.11 IPv6 -- examen_reseau_v2 */
+  "16"
 ];
 
 /* ============================================================
@@ -167,6 +170,7 @@ async function initHashes() {
 /* ============================================================
    IMAGE DU SCHÉMA RÉSEAU (intégrée en SVG, reconstitution du schéma fourni)
    ============================================================ */
+/* SVG adrès IPv6 pou kesyon A.11 -- examen_reseau_v2 */
 const IPV6_DIAGRAM_SVG = `
 <svg viewBox="0 0 520 70" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:520px;background:#fff;border-radius:8px;padding:12px 0">
   <text x="10" y="28" font-family="Courier New,monospace" font-size="18" font-weight="bold" fill="#333">
@@ -234,6 +238,7 @@ function renderQCM() {
     if (item.img === 'schema-reseau') {
       html += `<div style="margin-bottom:16px">${NETWORK_DIAGRAM_SVG}</div>`;
     } else if (item.img === 'ipv6') {
+      /* Afiche SVG IPv6 la -- examen_reseau_v2 */
       html += `<div style="margin-bottom:16px;text-align:center">${IPV6_DIAGRAM_SVG}</div>`;
     }
     html += `<div class="opt-list">`;
@@ -364,6 +369,7 @@ function renderSubj() {
   c.innerHTML = html;
 }
 
+/* Fèmen modal pop-up la -- examen_reseau_v2 */
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
 }
@@ -388,6 +394,7 @@ function startExam() {
 
   renderQCM(); renderVF(); renderDD(); renderDND(); renderMulti(); renderSubj();
   startTimer();
+  /* Scroll otomatik pou etidyan wè Seksyon A dirèkteman -- examen_reseau_v2 */
   setTimeout(() => document.getElementById('exam-body')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
@@ -492,6 +499,7 @@ function collectSubjective() {
 let lastEmailBody = '';
 let lastEmailSubject = '';
 
+/* Tcheke si etidyan an reponn omwen 1 kesyon -- examen_reseau_v2 */
 function hasAnyAnswer() {
   for (let i = 0; i < QCM.length; i++) {
     if (document.querySelector(`input[name="qcm-${i}"]:checked`)) return true;
@@ -524,6 +532,7 @@ function hasAnyAnswer() {
 async function submitExam(autoSubmit) {
   if (examSubmitted) return;
   if (!autoSubmit && !hasAnyAnswer()) {
+    /* Montre modal pop-up olye alert() -- examen_reseau_v2 */
     document.getElementById('modal-overlay').classList.add('show');
     return;
   }
@@ -551,10 +560,12 @@ function buildEmailContent(objectiveScore, detail, subjectiveAnswers) {
   let body = `EXAMEN RÉSEAU 1 — RÉSULTATS\n`;
   body += `Étudiant : ${studentName}\n`;
   body += `============================================\n\n`;
+  /* Rekalkil pwen: total automat = /67 (A 33+B 20+C 6+D 4+E 4) -- examen_reseau_v2 */
   body += `NOTE AUTOMATIQUE (Sections A+B+C+D+E) : ${objectiveScore} / 67\n\n`;
   body += `--- Détail des réponses automatiques ---\n`;
   detail.forEach(line => { body += line + '\n'; });
   body += `\n============================================\n`;
+  /* Seksyon F pase soti 26 a 33 pwen -- examen_reseau_v2 */
   body += `SECTION F — RÉPONSES SUBJECTIVES (à corriger, 33 pts)\n`;
   body += `============================================\n\n`;
   subjectiveAnswers.forEach(ans => { body += ans + '\n\n---\n\n'; });
