@@ -329,6 +329,7 @@ function dropChip(ev, slotIdx) {
   const chipEl = document.getElementById('chip-' + draggedChipIndex);
   if (chipEl) chipEl.classList.add('placed');
   draggedChipIndex = null;
+  updateProgress();
 }
 
 function renderMulti() {
@@ -354,6 +355,7 @@ function toggleCheckbox(qi, oi) {
   cb.checked = !cb.checked;
   const item = document.getElementById(`multi-${qi}-${oi}`);
   item.classList.toggle('checked', cb.checked);
+  updateProgress();
 }
 
 function renderSubj() {
@@ -374,11 +376,35 @@ function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
 }
 
+/* Mete ajou bar pwogresyon multistep -- examen_reseau_v2 */
+function updateProgress() {
+  const sections = [
+    { name: 'A', qCount: QCM.length, check: () => QCM.every((_, i) => document.querySelector(`input[name="qcm-${i}"]:checked`)) },
+    { name: 'B', qCount: VF.length, check: () => VF.every((_, i) => document.querySelector(`input[name="vf-${i}"]:checked`)) },
+    { name: 'C', qCount: DD.length, check: () => DD.every((_, i) => { const s = document.getElementById(`dd-${i}`); return s && s.value; }) },
+    { name: 'D', qCount: DND.length, check: () => DND.every((_, i) => { const s = document.getElementById(`slot-${i}`); return s && s.getAttribute('data-answer'); }) },
+    { name: 'E', qCount: MULTI.length, check: () => MULTI.every((_, qi) => MULTI[qi].opts.some((_, oi) => { const cb = document.getElementById(`multi-cb-${qi}-${oi}`); return cb && cb.checked; })) },
+    { name: 'F', qCount: SUBJ.length, check: () => SUBJ.every((_, i) => { const el = document.getElementById(`subj-${i}`); return el && el.value.trim(); }) },
+  ];
+  sections.forEach((sec, idx) => {
+    const done = sec.check();
+    const step = document.querySelector(`.pstep[data-section="${sec.name}"]`);
+    if (step) step.classList.toggle('done', done);
+    if (idx > 0) {
+      const prev = sections[idx - 1];
+      const prevDone = prev.check();
+      const conn = document.querySelectorAll('.pconnector')[idx - 1];
+      if (conn) conn.classList.toggle('done', prevDone);
+    }
+  });
+}
+
 function selectRadio(group, qIdx, optIdx) {
   document.querySelectorAll(`[id^="${group}-${qIdx}-"]`).forEach(el => el.classList.remove('checked'));
   const el = document.getElementById(`${group}-${qIdx}-${optIdx}`);
   el.classList.add('checked');
   el.querySelector('input').checked = true;
+  updateProgress();
 }
 
 /* ============================================================
@@ -393,6 +419,9 @@ function startExam() {
   document.getElementById('screen-exam').classList.add('show');
 
   renderQCM(); renderVF(); renderDD(); renderDND(); renderMulti(); renderSubj();
+  /* Attache evenman pou bar pwogresyon -- examen_reseau_v2 */
+  document.querySelectorAll('select.dd').forEach(el => el.addEventListener('change', updateProgress));
+  document.querySelectorAll('textarea.subj').forEach(el => el.addEventListener('input', updateProgress));
   startTimer();
   /* Scroll otomatik pou etidyan wè Seksyon A dirèkteman -- examen_reseau_v2 */
   setTimeout(() => document.getElementById('exam-body')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
