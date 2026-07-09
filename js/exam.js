@@ -376,25 +376,22 @@ function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
 }
 
-/* Mete ajou bar pwogresyon multistep -- examen_reseau_v2 */
+/* Mete ajou bar pwogresyon liney (kesyon pa kesyon) -- examen_reseau_v2 */
 function updateProgress() {
-  const sections = [
-    { name: 'A', qCount: QCM.length, check: () => QCM.every((_, i) => document.querySelector(`input[name="qcm-${i}"]:checked`)) },
-    { name: 'B', qCount: VF.length, check: () => VF.every((_, i) => document.querySelector(`input[name="vf-${i}"]:checked`)) },
-    { name: 'C', qCount: DD.length, check: () => DD.every((_, i) => { const s = document.getElementById(`dd-${i}`); return s && s.value; }) },
-    { name: 'D', qCount: DND.length, check: () => DND.every((_, i) => { const s = document.getElementById(`slot-${i}`); return s && s.getAttribute('data-answer'); }) },
-    { name: 'E', qCount: MULTI.length, check: () => MULTI.every((_, qi) => MULTI[qi].opts.some((_, oi) => { const cb = document.getElementById(`multi-cb-${qi}-${oi}`); return cb && cb.checked; })) },
-    { name: 'F', qCount: SUBJ.length, check: () => SUBJ.every((_, i) => { const el = document.getElementById(`subj-${i}`); return el && el.value.trim(); }) },
-  ];
-  sections.forEach((sec, idx) => {
-    const done = sec.check();
-    const step = document.querySelector(`.pstep[data-section="${sec.name}"]`);
-    if (step) step.classList.toggle('done', done);
-    if (idx > 0) {
-      const prev = sections[idx - 1];
-      const prevDone = prev.check();
-      const conn = document.querySelectorAll('.pconnector')[idx - 1];
-      if (conn) conn.classList.toggle('done', prevDone);
+  let answered = 0;
+  const total = QCM.length + VF.length + DD.length + DND.length + MULTI.length + SUBJ.length;
+  QCM.forEach((_, i) => { if (document.querySelector(`input[name="qcm-${i}"]:checked`)) answered++; });
+  VF.forEach((_, i) => { if (document.querySelector(`input[name="vf-${i}"]:checked`)) answered++; });
+  DD.forEach((_, i) => { const s = document.getElementById(`dd-${i}`); if (s && s.value) answered++; });
+  DND.forEach((_, i) => { const s = document.getElementById(`slot-${i}`); if (s && s.getAttribute('data-answer')) answered++; });
+  MULTI.forEach((_, qi) => { if (MULTI[qi].opts.some((_, oi) => { const cb = document.getElementById(`multi-cb-${qi}-${oi}`); return cb && cb.checked; })) answered++; });
+  SUBJ.forEach((_, i) => { const el = document.getElementById(`subj-${i}`); if (el && el.value.trim()) answered++; });
+  const pct = total > 0 ? (answered / total) * 100 : 0;
+  const fill = document.getElementById('progress-fill');
+  const txt = document.getElementById('progress-text');
+  if (fill) fill.style.width = pct + '%';
+  if (txt) txt.textContent = answered + ' / ' + total;
+}
     }
   });
 }

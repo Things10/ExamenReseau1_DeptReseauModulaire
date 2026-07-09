@@ -112,28 +112,14 @@
   /* scroll-margin-top ajoute pou header a pa kache seksyon A lè scrollIntoView -- examen_reseau_v2 */
   #exam-body { max-width: 760px; margin: 0 auto; padding: 32px 24px 100px; scroll-margin-top: 70px; }
 
-  /* Bar pwogresyon multistep (CCST NetAcad style) -- examen_reseau_v2 */
-  #progress-bar {
-    display: flex; align-items: center; justify-content: center;
-    padding: 18px 24px 12px; max-width: 760px; margin: 0 auto;
+  /* Bar pwogresyon liney (kesyon pa kesyon) — examen_reseau_v2 */
+  #progress-wrap {
+    display: flex; align-items: center; gap: 12px;
+    max-width: 760px; margin: 0 auto; padding: 14px 24px 6px;
   }
-  .pstep { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .pcircle {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: var(--bg-card); border: 2px solid var(--border);
-    color: var(--text-faint); font-family: var(--mono); font-size: 13px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s;
-  }
-  .pstep.done .pcircle { background: var(--accent); border-color: var(--accent); color: #06231A; }
-  .plabel { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.04em; }
-  .pstep.done .plabel { color: var(--accent-dim); font-weight: 600; }
-  .pconnector {
-    width: 100%; max-width: 48px; height: 2px;
-    background: var(--border); margin: 0 4px; align-self: flex-start; margin-top: 15px;
-    transition: background 0.3s;
-  }
-  .pconnector.done { background: var(--accent); }
+  #progress-bar { flex: 1; height: 10px; background: var(--bg-card); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  #progress-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 10px; transition: width 0.4s ease; }
+  #progress-text { font-family: var(--mono); font-size: 13px; color: var(--text-faint); min-width: 52px; text-align: right; }
 
   .section-divider {
     font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
