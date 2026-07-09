@@ -97,6 +97,15 @@
 </div>
 
 
+<div id="modal-overlay" class="modal-overlay" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-icon">!</div>
+    <div class="modal-title">Attention</div>
+    <div class="modal-msg">Vous devez répondre à au moins une question avant de soumettre.</div>
+    <button class="modal-btn" onclick="closeModal()">Compris</button>
+  </div>
+</div>
+
 <script src="js/exam.js"></script>
 </body>
 </html>

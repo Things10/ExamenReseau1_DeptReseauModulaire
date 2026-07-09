@@ -364,6 +364,10 @@ function renderSubj() {
   c.innerHTML = html;
 }
 
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
 function selectRadio(group, qIdx, optIdx) {
   document.querySelectorAll(`[id^="${group}-${qIdx}-"]`).forEach(el => el.classList.remove('checked'));
   const el = document.getElementById(`${group}-${qIdx}-${optIdx}`);
@@ -520,7 +524,7 @@ function hasAnyAnswer() {
 async function submitExam(autoSubmit) {
   if (examSubmitted) return;
   if (!autoSubmit && !hasAnyAnswer()) {
-    alert('Vous devez répondre à au moins une question avant de soumettre.');
+    document.getElementById('modal-overlay').classList.add('show');
     return;
   }
   examSubmitted = true;
