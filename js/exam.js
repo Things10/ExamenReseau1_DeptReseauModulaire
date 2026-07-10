@@ -6,7 +6,7 @@ const TEACHER_EMAIL = "stevengauchier@gmail.com";
 const EMAILJS_SERVICE_ID = "service_jjqlfck";
 const EMAILJS_TEMPLATE_ID = "template_a9uazrs";
 const EMAILJS_PUBLIC_KEY = "8ZF_oJb8pHOzojn1p";
-const EXAM_DURATION_SECONDS = 120 * 60; // 120 minutes
+const EXAM_DURATION_SECONDS = 150 * 60; // 150 minutes (2h30)
 const DEADLINE = new Date("2099-12-31T23:59:59");
 
 /* Lis kòd aksè ak non etidyan yo — modifye selon lis klas ou */
