@@ -9,6 +9,25 @@ const EMAILJS_PUBLIC_KEY = "8ZF_oJb8pHOzojn1p";
 const EXAM_DURATION_SECONDS = 120 * 60; // 120 minutes
 const DEADLINE = new Date("2099-12-31T23:59:59");
 
+/* Lis kòd aksè ak non etidyan yo — modifye selon lis klas ou */
+const STUDENTS = [
+  { code: "2025RES01", name: "ETIDYAN 1" },
+  { code: "2025RES02", name: "ETIDYAN 2" },
+  { code: "2025RES03", name: "ETIDYAN 3" },
+  { code: "2025RES04", name: "ETIDYAN 4" },
+  { code: "2025RES05", name: "ETIDYAN 5" },
+  { code: "2025RES06", name: "ETIDYAN 6" },
+  { code: "2025RES07", name: "ETIDYAN 7" },
+  { code: "2025RES08", name: "ETIDYAN 8" },
+  { code: "2025RES09", name: "ETIDYAN 9" },
+  { code: "2025RES10", name: "ETIDYAN 10" },
+  { code: "2025RES11", name: "ETIDYAN 11" },
+  { code: "2025RES12", name: "ETIDYAN 12" },
+  { code: "2025RES13", name: "ETIDYAN 13" },
+  { code: "2025RES14", name: "ETIDYAN 14" },
+  { code: "2025RES15", name: "ETIDYAN 15" },
+];
+
 /* ============================================================
    HACHAGE SHA-256 (les bonnes réponses ne sont jamais en clair)
    ============================================================ */
@@ -488,19 +507,32 @@ function showSummary() {
    DÉMARRAGE DE L'EXAMEN
    ============================================================ */
 function startExam() {
+  const codeInput = document.getElementById('access-code');
   const nameInput = document.getElementById('student-name');
-  studentName = nameInput.value.trim();
+  const enteredCode = codeInput.value.trim().toUpperCase();
+  const enteredName = nameInput.value.trim();
 
-  /* Yon sèl tchek: si non an vid oswa move fòma, montre menm pop-up la -- examen_reseau_v2 */
-  /* Chak pati non an dwe gen omwen 2 lèt -- pa aksepte inisyal tankou "GS" oswa "G S" */
+  /* Tcheke kòd aksè a */
+  const student = STUDENTS.find(s => s.code.toUpperCase() === enteredCode);
+  if (!student) {
+    document.querySelector('.modal-icon').textContent = '!';
+    document.querySelector('.modal-title').textContent = 'Code invalide';
+    document.querySelector('.modal-msg').textContent = 'Le code d\'accès que vous avez entré n\'est pas reconnu. Veuillez vérifier auprès de votre enseignant.';
+    document.getElementById('modal-overlay').classList.add('show');
+    return;
+  }
+
+  /* Tcheke non an */
   const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]{2,}(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]{2,})*(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]{2,}(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]{2,})*)+$/;
-  if (!studentName || !nameRegex.test(studentName)) {
+  if (!enteredName || !nameRegex.test(enteredName)) {
     document.querySelector('.modal-icon').textContent = '!';
     document.querySelector('.modal-title').textContent = 'Nom requis';
     document.querySelector('.modal-msg').textContent = 'Entrez votre nom complet';
     document.getElementById('modal-overlay').classList.add('show');
     return;
   }
+
+  studentName = student.name;
 
   document.getElementById('screen-intro').style.display = 'none';
   document.getElementById('screen-exam').classList.add('show');
