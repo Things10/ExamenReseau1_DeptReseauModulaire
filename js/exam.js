@@ -99,17 +99,57 @@ const DD = [
 
 /* ============================================================
    SECTION D — Glisser-déposer (4 x 1 pt = 4 pts)
-   6 réponses proposées (2 leurres plausibles) pour forcer la réflexion
+   Chaque question a son propre jeu de 6 chips
    ============================================================ */
 const DND = [
-  { target: "Hub", ans: "Diffuse les données reçues vers tous les autres ports, sans aucune distinction de destinataire" },
-  { target: "Switch", ans: "Dirige les données uniquement vers le port correspondant à l'adresse MAC de destination" },
-  { target: "Routeur", ans: "Achemine les paquets entre des réseaux différents en se basant sur l'adresse IP de destination" },
-  { target: "Modem", ans: "Convertit le signal numérique de l'ordinateur en signal analogique transmissible sur la ligne, et inversement" },
-];
-const DND_DECOYS = [
-  "Amplifie le signal reçu pour prolonger la portée du câble sans analyser son contenu",
-  "Filtre le trafic entrant et sortant selon des règles de sécurité prédéfinies"
+  {
+    target: "Hub",
+    q: "Quel est le rôle de ce périphérique réseau ?",
+    chips: [
+      "Diffuse les données reçues vers tous les autres ports, sans aucune distinction de destinataire",
+      "Un répéteur multiport qui nettoie et régénère le signal sur tous les ports",
+      "Un équipement qui filtre le trafic en fonction des adresses MAC",
+      "Un concentrateur qui connecte deux réseaux de types différents",
+      "Un appareil qui convertit le signal numérique en signal analogique",
+      "Un dispositif qui attribue des adresses IP aux machines du réseau"
+    ]
+  },
+  {
+    target: "Rôle du modèle OSI",
+    q: "Pourquoi le modèle OSI est-il organisé en couches ?",
+    chips: [
+      "Pour diviser la communication réseau en étapes indépendantes et faciliter l'interopérabilité",
+      "Pour augmenter la vitesse de transmission en réduisant le nombre de protocoles",
+      "Pour permettre à chaque fabricant de créer ses propres protocoles propriétaires",
+      "Pour centraliser tout le traitement réseau dans une seule couche matérielle",
+      "Pour remplacer complètement la suite TCP/IP dans les réseaux modernes",
+      "Pour garantir que tous les équipements utilisent le même système d'exploitation"
+    ]
+  },
+  {
+    target: "TCP vs UDP",
+    q: "Quelle est la différence fondamentale entre TCP et UDP ?",
+    chips: [
+      "TCP est orienté connexion et fiable, UDP est sans connexion et plus rapide",
+      "UDP garantit la livraison des paquets alors que TCP ne le fait pas",
+      "TCP est utilisé pour le streaming vidéo car il sacrifie la fiabilité pour la vitesse",
+      "TCP et UDP sont deux versions du même protocole, UDP étant plus récent",
+      "UDP établit une connexion avant d'envoyer des données, contrairement à TCP",
+      "TCP ne peut pas détecter les paquets perdus et ne les renvoie jamais"
+    ]
+  },
+  {
+    target: "Adresse MAC / IP",
+    q: "Quelle est la différence entre une adresse MAC et une adresse IP ?",
+    chips: [
+      "La MAC est une adresse physique unique attribuée par le fabricant; l'IP est une adresse logique variable",
+      "La MAC est attribuée par le fournisseur d'accès alors que l'IP est fixe et universelle",
+      "La MAC et l'IP sont identiques mais exprimées dans des formats différents",
+      "L'adresse IP est unique au monde tandis que la MAC peut être modifiée",
+      "La MAC sert à router les paquets entre réseaux; l'IP sert à la communication locale",
+      "Une adresse IP est permanente alors qu'une adresse MAC change à chaque connexion"
+    ]
+  }
 ];
 
 /* ============================================================
@@ -164,7 +204,7 @@ async function initHashes() {
   for (let i = 0; i < QCM.length; i++) QCM[i].hash = await sha256(QCM_ANSWERS[i]);
   for (let i = 0; i < VF.length; i++) VF[i].hash = await sha256(VF[i].ans);
   for (let i = 0; i < DD.length; i++) DD[i].hash = await sha256(DD[i].ans);
-  for (let i = 0; i < DND.length; i++) DND[i].hash = await sha256(DND[i].ans);
+  for (let i = 0; i < DND.length; i++) DND[i].hash = await sha256(DND[i].chips[0]);
 }
 
 /* ============================================================
@@ -244,7 +284,7 @@ const SECTION_LABELS = {
   A: 'Section A \u2014 Questions \u00e0 choix multiple',
   B: 'Section B \u2014 Vrai ou Faux',
   C: 'Section C \u2014 Liste d\u00e9roulante',
-  D: 'Section D \u2014 Glisser-d\u00e9poser : \u00e9quipement et fonction',
+  D: 'Section D \u2014 Glisser-d\u00e9poser : \u00e9quipement et concepts r\u00e9seau',
   E: 'Section E \u2014 Choix multiples (plusieurs r\u00e9ponses correctes)',
   F: 'Section F \u2014 Questions de d\u00e9finition et de r\u00e9flexion',
 };
@@ -296,17 +336,17 @@ function buildQuestionHTML(idx, q) {
     });
     html += `</select>`;
   } else if (q.type === 'dnd') {
-    const allChips = [...DND.map(d => d.ans), ...DND_DECOYS];
+    const chips = q.chips || DND[0].chips;
     const used = userAnswers[idx] || '';
     html += `<div class="dnd-layout">`;
     html += `<div class="dnd-equip">${q.target}</div>`;
     html += `<div class="dnd-pool" id="dnd-pool-${idx}">`;
-    allChips.forEach((chip, ci) => {
+    chips.forEach((chip, ci) => {
       const pl = chip === used;
       html += `<div class="dnd-chip${pl ? ' placed' : ''}" id="dnd-chip-${idx}-${ci}" draggable="${!pl}" data-text="${chip.replace(/"/g, '&quot;')}" ondragstart="dragStartSingle(event,${idx},${ci})">${chip}</div>`;
     });
     html += `</div></div>`;
-    html += `<div class="dnd-slot${used ? ' filled' : ''}" id="dnd-slot-${idx}" ondragover="dragOverSingle(event)" ondrop="dropSingle(event,${idx})">${(used && used !== 'undefined') ? used : 'D\u00e9posez la description ici'}</div>`;
+    html += `<div class="dnd-slot${used ? ' filled' : ''}" id="dnd-slot-${idx}" ondragover="dragOverSingle(event)" ondrop="dropSingle(event,${idx})">${used || 'D\u00e9posez la description ici'}</div>`;
   } else if (q.type === 'multi') {
     html += `<div class="opt-list">`;
     q.opts.forEach((opt, oi) => {
