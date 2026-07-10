@@ -159,7 +159,7 @@
   #q-container { min-height: 200px; }
   #q-container .q-card {
     background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
-    padding: 28px 28px; margin-top: 20px; scroll-margin-top: 130px;
+    padding: 28px 28px; margin-top: 20px; scroll-margin-top: 150px;
   }
   #q-container .q-num { font-family: var(--mono); font-size: 12px; color: var(--text-faint); margin-bottom: 6px; }
   #q-container .q-text { font-size: 16px; font-weight: 500; margin-bottom: 20px; line-height: 1.5; color: var(--text); }

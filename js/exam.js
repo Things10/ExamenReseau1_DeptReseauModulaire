@@ -474,7 +474,10 @@ function startExam() {
   document.getElementById('screen-summary').style.display = 'none';
   renderSection(0);
   startTimer();
-  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+  setTimeout(() => {
+    const card = document.querySelector('#q-container .q-card');
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
 }
 
 /* ============================================================
