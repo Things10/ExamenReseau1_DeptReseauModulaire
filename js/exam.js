@@ -339,11 +339,8 @@ function renderSection(sectionIdx) {
   updateProgress();
   updateNavButtons();
 
-  /* Woulo otomatik nan premye kesyon seksyon an */
-  setTimeout(() => {
-    const firstCard = document.querySelector('#q-container .q-card');
-    if (firstCard) firstCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 50);
+  /* Woulo nan tèt paj la pou wè progress bar + premye kesyon */
+  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
 }
 
 function goNext() {
