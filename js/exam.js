@@ -697,6 +697,7 @@ async function sendEmail(objectiveScore, detail, subjectiveAnswers) {
       EMAILJS_SERVICE_ID,
       EMAILJS_TEMPLATE_ID,
       {
+        to_email: TEACHER_EMAIL,
         student_name: studentName,
         objective_score: objectiveScore,
         detail: detailText,
