@@ -338,6 +338,12 @@ function renderSection(sectionIdx) {
   container.innerHTML = html;
   updateProgress();
   updateNavButtons();
+
+  /* Woulo otomatik nan premye kesyon seksyon an */
+  setTimeout(() => {
+    const firstCard = document.querySelector('#q-container .q-card');
+    if (firstCard) firstCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
 }
 
 function goNext() {
