@@ -251,9 +251,7 @@ const SECTION_LABELS = {
 
 function updateProgress() {
   const fill = document.getElementById('progress-fill');
-  const txt = document.getElementById('progress-text');
-  if (fill) fill.style.width = (currentSectionIdx / SECTIONS.length * 100) + '%';
-  if (txt) txt.textContent = 'Section ' + SECTIONS[currentSectionIdx] + ' / F';
+  if (fill) fill.style.width = ((currentSectionIdx + 1) / SECTIONS.length * 100) + '%';
 }
 
 function updateNavButtons() {
