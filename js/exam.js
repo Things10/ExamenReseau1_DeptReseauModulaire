@@ -285,11 +285,11 @@ const NETWORK_DIAGRAM_SVG = `
    NAVIGATION PA SEKSYON (tout kesyon nan seksyon an vizib)
    ============================================================ */
 const QUESTIONS = [];
-QCM.forEach((q, i) => QUESTIONS.push({ ...q, section: 'A', type: 'qcm', sIdx: i }));
-VF.forEach((q, i) => QUESTIONS.push({ ...q, section: 'B', type: 'vf', sIdx: i }));
-DD.forEach((q, i) => QUESTIONS.push({ ...q, section: 'C', type: 'dd', sIdx: i }));
-DND.forEach((q, i) => QUESTIONS.push({ ...q, section: 'D', type: 'dnd', sIdx: i }));
-MULTI.forEach((q, i) => QUESTIONS.push({ ...q, section: 'E', type: 'multi', sIdx: i }));
+QCM.forEach((q, i) => QUESTIONS.push({ ...q, section: 'A', type: 'qcm', sIdx: i, pts: 2 }));
+VF.forEach((q, i) => QUESTIONS.push({ ...q, section: 'B', type: 'vf', sIdx: i, pts: 2 }));
+DD.forEach((q, i) => QUESTIONS.push({ ...q, section: 'C', type: 'dd', sIdx: i, pts: 2 }));
+DND.forEach((q, i) => QUESTIONS.push({ ...q, section: 'D', type: 'dnd', sIdx: i, pts: 2 }));
+MULTI.forEach((q, i) => QUESTIONS.push({ ...q, section: 'E', type: 'multi', sIdx: i, pts: 4 }));
 SUBJ.forEach((q, i) => QUESTIONS.push({ ...q, section: 'F', type: 'subj', sIdx: i }));
 
 const SECTIONS = ['A','B','C','D','E','F'];
@@ -297,12 +297,12 @@ let currentSectionIdx = 0;
 let userAnswers = {};
 
 const SECTION_LABELS = {
-  A: 'Section A \u2014 Questions \u00e0 choix multiple',
-  B: 'Section B \u2014 Vrai ou Faux',
-  C: 'Section C \u2014 Liste d\u00e9roulante',
-  D: 'Section D \u2014 Glisser-d\u00e9poser : \u00e9quipement et concepts r\u00e9seau',
-  E: 'Section E \u2014 Choix multiples (plusieurs r\u00e9ponses correctes)',
-  F: 'Section F \u2014 Questions de d\u00e9finition et de r\u00e9flexion (2 sur 3 obligatoires)',
+  A: 'Section A \u2014 Questions \u00e0 choix multiple (2 pts chacune)',
+  B: 'Section B \u2014 Vrai ou Faux (2 pts chacune)',
+  C: 'Section C \u2014 Liste d\u00e9roulante (2 pts chacune)',
+  D: 'Section D \u2014 Glisser-d\u00e9poser : \u00e9quipement et concepts r\u00e9seau (2 pts chacun)',
+  E: 'Section E \u2014 Choix multiples (4 pts chacun)',
+  F: 'Section F \u2014 Questions de d\u00e9finition et de r\u00e9flexion (15 pts chacune, 2 sur 3 obligatoires)',
 };
 
 function updateProgress() {
@@ -324,7 +324,7 @@ function updateNavButtons() {
 
 function buildQuestionHTML(idx, q) {
   let html = `<div class="q-card">`;
-  html += `<div class="q-num">${q.section}.${q.sIdx + 1}</div>`;
+  html += `<div class="q-num">${q.section}.${q.sIdx + 1}</div> <span class="q-points">${q.pts || 0} pts</span>`;
   html += `<div class="q-text">${q.q}`;
   if (q.img === 'schema-reseau') {
     html += `</div><div style="margin-bottom:16px;text-align:center">${NETWORK_DIAGRAM_SVG}</div>`;
