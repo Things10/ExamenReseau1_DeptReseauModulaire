@@ -475,6 +475,19 @@ function dropSingle(ev, idx) {
 }
 
 /* F�men modal pop-up la -- examen_reseau_v2 */
+function toggleCodeVis() {
+  const inp = document.getElementById('access-code');
+  const eye = document.getElementById('eye-btn');
+  if (!inp) return;
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    eye.textContent = '\u{1F441}';
+  } else {
+    inp.type = 'password';
+    eye.textContent = '\u{1F441}';
+  }
+}
+
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('show');
   document.querySelector('.modal-icon').textContent = '!';

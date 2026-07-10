@@ -79,6 +79,13 @@
     border: 1px solid var(--border); border-radius: 8px; background: var(--bg-card); color: var(--text);
   }
   .field-group input:focus { outline: none; border-color: var(--accent); }
+  .code-field .code-wrap { position: relative; display: flex; align-items: center; }
+  .code-field .code-wrap input { padding-right: 44px; }
+  .code-field .eye-btn {
+    position: absolute; right: 12px; cursor: pointer; font-size: 20px; line-height: 1;
+    user-select: none; opacity: 0.55; transition: opacity 0.15s;
+  }
+  .code-field .eye-btn:hover { opacity: 1; }
 
   .start-btn {
     font-family: var(--sans); font-weight: 600; font-size: 15px;

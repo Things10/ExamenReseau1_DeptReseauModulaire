@@ -38,9 +38,13 @@
     <li>Ne fermez pas cette page pendant l'examen — vos réponses ne sont pas sauvegardées si vous quittez.</li>
   </ul>
 
-  <div class="field-group">
+  <div class="field-group code-field">
     <label for="access-code">Entrez votre code</label>
-    <input type="password" id="access-code" placeholder="Entrez votre code">
+    <div class="code-wrap">
+      <input type="password" id="access-code" placeholder="Entrez votre code" autocomplete="off">
+      <span class="eye-btn" id="eye-btn" onclick="toggleCodeVis()">&#128065;</span>
+    </div>
+  </div>
   </div>
 
   <button class="start-btn" id="start-btn" onclick="startExam()">Commencer l'examen</button>
