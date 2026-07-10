@@ -324,14 +324,12 @@ function updateNavButtons() {
 
 function buildQuestionHTML(idx, q) {
   let html = `<div class="q-card">`;
-  html += `<div class="q-num">${q.section}.${q.sIdx + 1}</div> <span class="q-points">${q.pts || 0} pts</span>`;
-  html += `<div class="q-text">${q.q}`;
+  html += `<div class="q-num">${q.section}.${q.sIdx + 1}</div>`;
+  html += `<div class="q-text">${q.q} <span class="q-points">${q.pts || 0} pts</span></div>`;
   if (q.img === 'schema-reseau') {
-    html += `</div><div style="margin-bottom:16px;text-align:center">${NETWORK_DIAGRAM_SVG}</div>`;
+    html += `<div style="margin-bottom:16px;text-align:center">${NETWORK_DIAGRAM_SVG}</div>`;
   } else if (q.img === 'ipv6') {
-    html += `</div><div style="margin-bottom:16px;text-align:center">${IPV6_DIAGRAM_SVG}</div>`;
-  } else {
-    html += `</div>`;
+    html += `<div style="margin-bottom:16px;text-align:center">${IPV6_DIAGRAM_SVG}</div>`;
   }
 
   if (q.type === 'qcm' || q.type === 'vf') {
