@@ -193,7 +193,7 @@ const MULTI = [
 const SUBJ = [
   { q: "Définissez ce qu'est un réseau informatique et expliquez la différence entre un réseau LAN et un réseau WAN.", pts: 15 },
   { q: "Expliquez le rôle du modèle OSI. Pourquoi un modèle en couches est-il utile pour comprendre les réseaux ?", pts: 15 },
-  { q: "Décrivez les trois principaux modes de transmission de données (simplex, half-duplex, full-duplex) en donnant un exemple concret pour chacun.", pts: 15 },
+  { q: "Expliquez la différence entre TCP et UDP. Dans quel cas utiliserait-on plutôt UDP malgré son manque de fiabilité ?", pts: 15 },
 ];
 const SUBJ_NOTE = "2 des 3 questions subjectives sont obligatoires";
 
