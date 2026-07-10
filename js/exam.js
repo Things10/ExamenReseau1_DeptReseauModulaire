@@ -508,9 +508,7 @@ function showSummary() {
    ============================================================ */
 function startExam() {
   const codeInput = document.getElementById('access-code');
-  const nameInput = document.getElementById('student-name');
   const enteredCode = codeInput.value.trim().toUpperCase();
-  const enteredName = nameInput.value.trim();
 
   /* Tcheke kòd aksè a */
   const student = STUDENTS.find(s => s.code.toUpperCase() === enteredCode);
@@ -518,16 +516,6 @@ function startExam() {
     document.querySelector('.modal-icon').textContent = '!';
     document.querySelector('.modal-title').textContent = 'Code invalide';
     document.querySelector('.modal-msg').textContent = 'Le code d\'accès que vous avez entré n\'est pas reconnu. Veuillez vérifier auprès de votre enseignant.';
-    document.getElementById('modal-overlay').classList.add('show');
-    return;
-  }
-
-  /* Tcheke non an */
-  const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ]{2,}(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]{2,})*(?:\s+[A-Za-zÀ-ÖØ-öø-ÿ]{2,}(?:[-'][A-Za-zÀ-ÖØ-öø-ÿ]{2,})*)+$/;
-  if (!enteredName || !nameRegex.test(enteredName)) {
-    document.querySelector('.modal-icon').textContent = '!';
-    document.querySelector('.modal-title').textContent = 'Nom requis';
-    document.querySelector('.modal-msg').textContent = 'Entrez votre nom complet';
     document.getElementById('modal-overlay').classList.add('show');
     return;
   }
