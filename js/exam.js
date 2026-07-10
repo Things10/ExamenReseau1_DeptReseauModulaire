@@ -474,7 +474,7 @@ function startExam() {
   document.getElementById('screen-summary').style.display = 'none';
   renderSection(0);
   startTimer();
-  setTimeout(() => document.getElementById('exam-body')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
 }
 
 /* ============================================================
