@@ -13,9 +13,9 @@ const DEADLINE = new Date("2099-12-31T23:59:59");
 const STUDENTS = [
   { code: "2025RES01", name: "GAUCHIER Steven" },
   { code: "2025RES02", name: "Deshley REJOUIS" },
-  { code: "2025RES03", name: "ETIDYAN 3" },
-  { code: "2025RES04", name: "ETIDYAN 4" },
-  { code: "2025RES05", name: "ETIDYAN 5" },
+  { code: "2025RES03", name: "FLERIVAL Wiselet" },
+  { code: "2025RES04", name: "Ezechiel EXUME" },
+  { code: "2025RES05", name: "CLERVILLE Stephania" },
   { code: "2025RES06", name: "ETIDYAN 6" },
   { code: "2025RES07", name: "ETIDYAN 7" },
   { code: "2025RES08", name: "ETIDYAN 8" },
