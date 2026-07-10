@@ -11,8 +11,8 @@ const DEADLINE = new Date("2099-12-31T23:59:59");
 
 /* Lis kòd aksè ak non etidyan yo — modifye selon lis klas ou */
 const STUDENTS = [
-  { code: "2025RES01", name: "ETIDYAN 1" },
-  { code: "2025RES02", name: "ETIDYAN 2" },
+  { code: "2025RES01", name: "GAUCHIER Steven" },
+  { code: "2025RES02", name: "Deshley REJOUIS" },
   { code: "2025RES03", name: "ETIDYAN 3" },
   { code: "2025RES04", name: "ETIDYAN 4" },
   { code: "2025RES05", name: "ETIDYAN 5" },
@@ -480,8 +480,8 @@ function closeModal() {
   document.querySelector('.modal-icon').textContent = '!';
   document.querySelector('.modal-title').textContent = 'Attention';
   document.querySelector('.modal-msg').innerHTML = 'Vous devez r�pondre � au moins une question avant de soumettre.';
-  const ni = document.getElementById('student-name');
-  if (ni) ni.focus();
+  const ni = document.getElementById('access-code');
+  if (ni) { ni.focus(); ni.select(); }
 }
 
 function showSummary() {
