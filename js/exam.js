@@ -701,6 +701,7 @@ async function sendEmail(objectiveScore, detail, subjectiveAnswers) {
         objective_score: objectiveScore,
         detail: detailText,
         subjective: subjText,
+        email_body: lastEmailBody,
       },
       EMAILJS_PUBLIC_KEY
     );
