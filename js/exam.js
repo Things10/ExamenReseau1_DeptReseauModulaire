@@ -689,77 +689,39 @@ setupSubmitButtons(objectiveScore, detail, subjectiveAnswers);
 function buildEmailContent(objectiveScore, detail, subjectiveAnswers) {
   lastEmailSubject = `Résultats Réseau 1 — ${studentName}`;
 
-  const detailRows = detail.map(line => {
-    const parts = line.split(': ');
-    const label = parts[0] || '';
-    const rest = parts.slice(1).join(': ') || '';
-    const isCorrect = rest.includes('[correct]');
-    const cls = isCorrect ? 'correct' : 'incorrect';
-    return `<tr><td style="padding:4px 12px;border-bottom:1px solid #e0e0e0;font-family:monospace;font-size:13px">${label}</td><td style="padding:4px 12px;border-bottom:1px solid #e0e0e0;font-family:monospace;font-size:13px">${rest.replace(/\[correct\]/g,'<span style=\"color:#1D9E75;font-weight:700\">[correct]</span>').replace(/\[incorrect\]/g,'<span style=\"color:#D32F2F;font-weight:700\">[incorrect]</span>')}</td></tr>`;
-  }).join('\n');
-
-  const subjHTML = subjectiveAnswers.map(ans => {
+  let body = '';
+  body += `╔══════════════════════════════════════════════════════════╗\n`;
+  body += `║            RÉSEAU 1 — RÉSULTATS D'EXAMEN              ║\n`;
+  body += `╚══════════════════════════════════════════════════════════╝\n\n`;
+  body += `Étudiant : ${studentName}\n`;
+  body += `${'─'.repeat(60)}\n\n`;
+  body += `NOTE AUTOMATIQUE (A+B+C+D+E) : ${objectiveScore} / 70\n`;
+  body += `${'─'.repeat(60)}\n`;
+  body += ` Détail des réponses automatiques\n`;
+  body += `${'─'.repeat(60)}\n`;
+  detail.forEach(line => {
+    const display = line.replace('[correct]', '✓').replace('[incorrect]', '✗');
+    body += ` ${display}\n`;
+  });
+  body += `\n${'═'.repeat(60)}\n`;
+  body += ` SECTION F — Questions subjectives (30 pts, 2/3 obligatoires)\n`;
+  body += `${'═'.repeat(60)}\n\n`;
+  subjectiveAnswers.forEach(ans => {
     const lines = ans.split('\n');
-    const h = lines[0] || '';
-    const r = lines.slice(1).join('\n') || '(sans réponse)';
-    return `<div style="background:#f5f5f5;border-left:4px solid #FF9800;padding:12px 16px;margin:10px 0;border-radius:6px"><p style="margin:0 0 6px 0;font-size:14px;font-weight:600;color:#333">${h}</p><p style="margin:0;font-size:13px;color:#555;white-space:pre-wrap">${r}</p></div>`;
-  }).join('\n');
-
-  let body = `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:24px 0">
-<tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
-<tr><td style="background:#1a1a2e;padding:24px 32px;text-align:center">
-<h1 style="margin:0;color:#fff;font-size:22px;font-weight:700">RÉSEAU 1 — RÉSULTATS</h1>
-<p style="margin:6px 0 0 0;color:#aaa;font-size:13px">Examen final — Module Réseau 1</p>
-</td></tr>
-<tr><td style="padding:24px 32px">
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr><td style="padding-bottom:16px">
-<h2 style="margin:0;font-size:18px;color:#1a1a2e">Étudiant : ${studentName}</h2>
-</td></tr>
-<tr><td style="background:#e8f5e9;border-radius:8px;padding:16px 20px;margin-bottom:20px">
-<table width="100%">
-<tr><td style="font-size:14px;color:#333;font-weight:600">Note automatique (sections A+B+C+D+E)</td>
-<td style="text-align:right;font-size:24px;font-weight:700;color:#1D9E75">${objectiveScore} / 70</td></tr>
-</table>
-</td></tr>
-<tr><td>
-<h3 style="font-size:15px;color:#1a1a2e;margin:0 0 10px 0">Détail des réponses</h3>
-<table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e0e0e0;border-radius:8px;overflow:hidden">
-<thead><tr style="background:#f9f9f9">
-<th style="padding:8px 12px;text-align:left;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid #e0e0e0">Question</th>
-<th style="padding:8px 12px;text-align:left;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid #e0e0e0">Réponse</th>
-</tr></thead>
-<tbody>${detailRows}</tbody>
-</table>
-</td></tr>
-<tr><td style="padding-top:24px">
-<h3 style="font-size:15px;color:#1a1a2e;margin:0 0 10px 0">Section F — Questions subjectives (30 pts — 2 sur 3 obligatoires)</h3>
-${subjHTML}
-</td></tr>
-<tr><td style="background:#fff3e0;border-radius:8px;padding:16px 20px;margin-top:20px">
-<h3 style="margin:0 0 12px 0;font-size:15px;color:#E65100">Calcul final (à compléter par l'enseignant)</h3>
-<table width="100%">
-<tr><td style="font-size:14px;color:#333">Note automatique</td><td style="text-align:right;font-size:16px;font-weight:600">${objectiveScore} / 70</td></tr>
-<tr><td style="font-size:14px;color:#333;padding-top:6px">Note manuelle (Section F)</td><td style="text-align:right;font-size:16px;font-weight:600;padding-top:6px;border-bottom:1px dashed #ccc">____ / 30</td></tr>
-<tr><td style="font-size:16px;color:#1a1a2e;font-weight:700;padding-top:10px">TOTAL</td><td style="text-align:right;font-size:20px;font-weight:700;color:#1a1a2e;padding-top:10px">____ / 100</td></tr>
-<tr><td style="font-size:13px;color:#888;padding-top:4px" colspan="2">Seuil de réussite : 65 / 100</td></tr>
-</table>
-</td></tr>
-</table>
-</td></tr>
-<tr><td style="background:#f9f9f9;padding:16px 32px;text-align:center;border-top:1px solid #e0e0e0">
-<p style="margin:0;font-size:11px;color:#aaa">Document généré automatiquement — Examen Réseau 1</p>
-</td></tr>
-</table>
-</td></tr>
-</table>
-</body>
-</html>`;
+    body += ` ${lines[0]}\n`;
+    body += ` ${lines.slice(1).join('\n') || '(sans réponse)'}\n`;
+    body += `${'·'.repeat(60)}\n\n`;
+  });
+  body += `\n${'═'.repeat(60)}\n`;
+  body += ` CALCUL FINAL (à compléter par l'enseignant)\n`;
+  body += `${'═'.repeat(60)}\n`;
+  body += ` Note automatique        : ${objectiveScore} / 70\n`;
+  body += ` Note manuelle (Section F) : ____ / 30\n`;
+  body += ` ───────────────────────────\n`;
+  body += ` TOTAL                   : ____ / 100\n`;
+  body += ` Seuil de réussite        : 65 / 100\n\n`;
+  body += `${'─'.repeat(60)}\n`;
+  body += ` Document généré automatiquement — Examen Réseau 1\n`;
 
   lastEmailBody = body;
 }
