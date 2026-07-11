@@ -207,6 +207,8 @@ let studentName = "";
    VÉRIFICATION DE LA DATE LIMITE
    ============================================================ */
 function checkDeadline() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('admin')) return false; // bypass pou pwofesè a
   if (new Date() > DEADLINE) {
     document.getElementById('screen-expired').classList.add('show');
     document.getElementById('screen-intro').style.display = 'none';
