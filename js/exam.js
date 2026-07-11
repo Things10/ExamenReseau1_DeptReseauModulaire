@@ -6,7 +6,7 @@ const TEACHER_EMAIL = "stevengauchier@gmail.com";
 const EMAILJS_SERVICE_ID = "service_jjqlfck";
 const EMAILJS_TEMPLATE_ID = "template_a9uazrs";
 const EMAILJS_PUBLIC_KEY = "8ZF_oJb8pHOzojn1p";
-const EXAM_DURATION_SECONDS = 150 * 60; // 150 minutes (2h30)
+const EXAM_DURATION_SECONDS = 150 * 60; // 150 minutes
 const DEADLINE = new Date("2099-12-31T23:59:59");
 
 /* Lis kòd aksè ak non etidyan yo — modifye selon lis klas ou */
@@ -21,8 +21,8 @@ const STUDENTS = [
   { code: "2025RES08", name: "Frederic Schnyder" },
   { code: "2025RES09", name: "Verna Josephine Angella" },
   { code: "2025RES10", name: "Einstein Medjuvens LAFONTANT" },
-  { code: "2025RES11", name: "ETIDYAN 11" },
-  { code: "2025RES12", name: "ETIDYAN 12" },
+  { code: "2025RES11", name: "Miralus Kervens" },
+  { code: "2025RES12", name: "Lovinsky FEDNA" },
   { code: "2025RES13", name: "ETIDYAN 13" },
   { code: "2025RES14", name: "ETIDYAN 14" },
   { code: "2025RES15", name: "ETIDYAN 15" },
@@ -39,7 +39,7 @@ async function sha256(text) {
 }
 
 /* ============================================================
-   SECTION A — QCM (11 x 2 pts = 22 pts)
+   SECTION A — QCM (11 x 3 pts = 33 pts)
    ============================================================ */
 const QCM = [
   { q: "Que peut-on placer dans ou sur un colis pour en assurer le suivi ?", opts: ["Déclencheur", "Capteur", "Carte d'interface de réseau", "Étiquette RFID"], hash: "" },
@@ -80,7 +80,8 @@ const VF = [
 ];
 
 /* ============================================================
-   SECTION C — Liste déroulante (6 x 2 pts = 12 pts)
+   SECTION C — Liste déroulante (6 x 1 pt = 6 pts)
+   1 seule question OSI conservée, 5 nouvelles questions techniques
    ============================================================ */
 const DD = [
   {
@@ -116,7 +117,8 @@ const DD = [
 ];
 
 /* ============================================================
-   SECTION D — Glisser-déposer (4 x 2 pts = 8 pts)
+   SECTION D — Glisser-déposer (4 x 1 pt = 4 pts)
+   Chaque question a son propre jeu de 6 chips
    ============================================================ */
 const DND = [
   {
@@ -171,7 +173,7 @@ const DND = [
 
 /* ============================================================
    SECTION E — Choix multiples, plusieurs bonnes réponses
-   (2 x 4 pts = 8 pts)
+   (2 x 2 pts = 4 pts) — E3, E4, E5 retirées
    ============================================================ */
 const MULTI = [
   {
@@ -187,15 +189,16 @@ const MULTI = [
 ];
 
 /* ============================================================
-   SECTION F — Questions subjectives (30 pts, 3 questions)
-   2 des 3 questions sont obligatoires
+   SECTION F — Questions subjectives (33 pts, 6 questions)
    ============================================================ */
 const SUBJ = [
-  { q: "Définissez ce qu'est un réseau informatique et expliquez la différence entre un réseau LAN et un réseau WAN.", pts: 15 },
-  { q: "Expliquez le rôle du modèle OSI. Pourquoi un modèle en couches est-il utile pour comprendre les réseaux ?", pts: 15 },
-  { q: "Expliquez la différence entre TCP et UDP. Dans quel cas utiliserait-on plutôt UDP malgré son manque de fiabilité ?", pts: 15 },
+  { q: "Définissez ce qu'est un réseau informatique et expliquez la différence entre un réseau LAN et un réseau WAN.", pts: 5 },
+  { q: "Expliquez le rôle du modèle OSI. Pourquoi un modèle en couches est-il utile pour comprendre les réseaux ?", pts: 5 },
+  { q: "Décrivez les trois principaux modes de transmission de données (simplex, half-duplex, full-duplex) en donnant un exemple concret pour chacun.", pts: 5 },
+  { q: "Expliquez la différence entre TCP et UDP. Dans quel cas utiliserait-on plutôt UDP malgré son manque de fiabilité ?", pts: 6 },
+  { q: "Qu'est-ce qu'une adresse MAC, et en quoi diffère-t-elle fondamentalement d'une adresse IP en termes de portée (locale vs routable) ?", pts: 6 },
+  { q: "Un poste à poste classique (P2P) montre une limite par rapport à une architecture client/serveur lorsqu'un réseau grandit en nombre de machines. Expliquez pourquoi, avec un exemple concret.", pts: 6 },
 ];
-const SUBJ_NOTE = "2 des 3 questions subjectives sont obligatoires";
 
 let timerInterval = null;
 let examSubmitted = false;
@@ -285,11 +288,11 @@ const NETWORK_DIAGRAM_SVG = `
    NAVIGATION PA SEKSYON (tout kesyon nan seksyon an vizib)
    ============================================================ */
 const QUESTIONS = [];
-QCM.forEach((q, i) => QUESTIONS.push({ ...q, section: 'A', type: 'qcm', sIdx: i, pts: 2 }));
-VF.forEach((q, i) => QUESTIONS.push({ ...q, section: 'B', type: 'vf', sIdx: i, pts: 2 }));
-DD.forEach((q, i) => QUESTIONS.push({ ...q, section: 'C', type: 'dd', sIdx: i, pts: 2 }));
-DND.forEach((q, i) => QUESTIONS.push({ ...q, section: 'D', type: 'dnd', sIdx: i, pts: 2 }));
-MULTI.forEach((q, i) => QUESTIONS.push({ ...q, section: 'E', type: 'multi', sIdx: i, pts: 4 }));
+QCM.forEach((q, i) => QUESTIONS.push({ ...q, section: 'A', type: 'qcm', sIdx: i }));
+VF.forEach((q, i) => QUESTIONS.push({ ...q, section: 'B', type: 'vf', sIdx: i }));
+DD.forEach((q, i) => QUESTIONS.push({ ...q, section: 'C', type: 'dd', sIdx: i }));
+DND.forEach((q, i) => QUESTIONS.push({ ...q, section: 'D', type: 'dnd', sIdx: i }));
+MULTI.forEach((q, i) => QUESTIONS.push({ ...q, section: 'E', type: 'multi', sIdx: i }));
 SUBJ.forEach((q, i) => QUESTIONS.push({ ...q, section: 'F', type: 'subj', sIdx: i }));
 
 const SECTIONS = ['A','B','C','D','E','F'];
@@ -297,12 +300,12 @@ let currentSectionIdx = 0;
 let userAnswers = {};
 
 const SECTION_LABELS = {
-  A: 'Section A \u2014 Questions \u00e0 choix multiple (2 pts chacune)',
-  B: 'Section B \u2014 Vrai ou Faux (2 pts chacune)',
-  C: 'Section C \u2014 Liste d\u00e9roulante (2 pts chacune)',
-  D: 'Section D \u2014 Glisser-d\u00e9poser : \u00e9quipement et concepts r\u00e9seau (2 pts chacun)',
-  E: 'Section E \u2014 Choix multiples (4 pts chacun)',
-  F: 'Section F \u2014 Questions de d\u00e9finition et de r\u00e9flexion (15 pts chacune, 2 sur 3 obligatoires)',
+  A: 'Section A \u2014 Questions \u00e0 choix multiple',
+  B: 'Section B \u2014 Vrai ou Faux',
+  C: 'Section C \u2014 Liste d\u00e9roulante',
+  D: 'Section D \u2014 Glisser-d\u00e9poser : \u00e9quipement et concepts r\u00e9seau',
+  E: 'Section E \u2014 Choix multiples (plusieurs r\u00e9ponses correctes)',
+  F: 'Section F \u2014 Questions de d\u00e9finition et de r\u00e9flexion',
 };
 
 function updateProgress() {
@@ -325,11 +328,13 @@ function updateNavButtons() {
 function buildQuestionHTML(idx, q) {
   let html = `<div class="q-card">`;
   html += `<div class="q-num">${q.section}.${q.sIdx + 1}</div>`;
-  html += `<div class="q-text">${q.q} <span class="q-points">${q.pts || 0} pts</span></div>`;
+  html += `<div class="q-text">${q.q}`;
   if (q.img === 'schema-reseau') {
-    html += `<div style="margin-bottom:16px;text-align:center">${NETWORK_DIAGRAM_SVG}</div>`;
+    html += `</div><div style="margin-bottom:16px;text-align:center">${NETWORK_DIAGRAM_SVG}</div>`;
   } else if (q.img === 'ipv6') {
-    html += `<div style="margin-bottom:16px;text-align:center">${IPV6_DIAGRAM_SVG}</div>`;
+    html += `</div><div style="margin-bottom:16px;text-align:center">${IPV6_DIAGRAM_SVG}</div>`;
+  } else {
+    html += `</div>`;
   }
 
   if (q.type === 'qcm' || q.type === 'vf') {
@@ -386,9 +391,6 @@ function renderSection(sectionIdx) {
   container.className = '';
 
   let html = '';
-  if (section === 'F') {
-    html += `<p class="subj-note">${SUBJ_NOTE}</p>`;
-  }
   QUESTIONS.forEach((q, idx) => {
     if (q.section === section) html += buildQuestionHTML(idx, q);
   });
@@ -530,13 +532,6 @@ function startExam() {
     document.getElementById('modal-overlay').classList.add('show');
     return;
   }
-  if (student.name.startsWith('ETIDYAN')) {
-    document.querySelector('.modal-icon').textContent = '!';
-    document.querySelector('.modal-title').textContent = 'Code non attribué';
-    document.querySelector('.modal-msg').textContent = 'Ce code n\'est pas encore attribué à un étudiant. Veuillez contacter votre enseignant.';
-    document.getElementById('modal-overlay').classList.add('show');
-    return;
-  }
 
   studentName = student.name;
 
@@ -595,7 +590,7 @@ async function gradeObjective() {
     const userAns = userAnswers[qi] || null;
     const userHash = userAns ? await sha256(userAns) : null;
     const correct = userHash === QCM[i].hash;
-    if (correct) score += 2; // QCM 2 pts chak
+    if (correct) score += 3;
     detail.push(`A.${i+1}: ${userAns || '(sans r�ponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
   }
   for (let i = 0; i < VF.length; i++, qi++) {
@@ -609,14 +604,14 @@ async function gradeObjective() {
     const userAns = userAnswers[qi] || null;
     const userHash = userAns ? await sha256(userAns) : null;
     const correct = userHash === DD[i].hash;
-    if (correct) score += 2; // Liste 2 pts chak
+    if (correct) score += 1;
     detail.push(`C.${i+1}: ${userAns || '(sans r�ponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
   }
   for (let i = 0; i < DND.length; i++, qi++) {
     const userAns = userAnswers[qi] || null;
     const userHash = userAns ? await sha256(userAns) : null;
     const correct = userHash === DND[i].hash;
-    if (correct) score += 2; // Glisser 2 pts chak
+    if (correct) score += 1;
     detail.push(`D (${DND[i].target}): ${userAns || '(sans r�ponse)'} ${correct ? '[correct]' : '[incorrect]'}`);
   }
   for (let qi2 = 0; qi2 < MULTI.length; qi2++, qi++) {
@@ -624,7 +619,7 @@ async function gradeObjective() {
     const correctSet = new Set(MULTI[qi2].ans);
     const userSet = new Set(userSelected);
     const isExactMatch = correctSet.size === userSet.size && [...correctSet].every(a => userSet.has(a));
-    if (isExactMatch) score += 4; // Multi 4 pts chak
+    if (isExactMatch) score += 2;
     detail.push(`E.${qi2+1}: ${userSelected.join(', ') || '(sans r�ponse)'} ${isExactMatch ? '[correct]' : '[incorrect]'}`);
   }
 
@@ -690,19 +685,19 @@ function buildEmailContent(objectiveScore, detail, subjectiveAnswers) {
   let body = `EXAMEN RÉSEAU 1 — RÉSULTATS\n`;
   body += `Étudiant : ${studentName}\n`;
   body += `============================================\n\n`;
-  /* Rekalkil pwen: total automat = /70 (A 22+B 20+C 12+D 8+E 8) -- examen_reseau_v2 */
-  body += `NOTE AUTOMATIQUE (Sections A+B+C+D+E) : ${objectiveScore} / 70\n\n`;
+  /* Rekalkil pwen: total automat = /67 (A 33+B 20+C 6+D 4+E 4) -- examen_reseau_v2 */
+  body += `NOTE AUTOMATIQUE (Sections A+B+C+D+E) : ${objectiveScore} / 67\n\n`;
   body += `--- Détail des réponses automatiques ---\n`;
   detail.forEach(line => { body += line + '\n'; });
   body += `\n============================================\n`;
-  /* Seksyon F pase 33 a 30 pwen -- examen_reseau_v2 */
-  body += `SECTION F — RÉPONSES SUBJECTIVES (à corriger, 30 pts — 2 sur 3 obligatoires)\n`;
+  /* Seksyon F pase soti 26 a 33 pwen -- examen_reseau_v2 */
+  body += `SECTION F — RÉPONSES SUBJECTIVES (à corriger, 33 pts)\n`;
   body += `============================================\n\n`;
   subjectiveAnswers.forEach(ans => { body += ans + '\n\n---\n\n'; });
   body += `============================================\n`;
   body += `CALCUL FINAL À COMPLÉTER PAR L'ENSEIGNANT :\n`;
-  body += `Note automatique : ${objectiveScore} / 70\n`;
-  body += `Note manuelle (Section F) : ____ / 30\n`;
+  body += `Note automatique : ${objectiveScore} / 67\n`;
+  body += `Note manuelle (Section F) : ____ / 33\n`;
   body += `TOTAL : ____ / 100   (seuil de réussite : 65/100)\n`;
 
   lastEmailBody = body;
