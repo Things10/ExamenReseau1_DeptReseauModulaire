@@ -532,6 +532,13 @@ function startExam() {
     document.getElementById('modal-overlay').classList.add('show');
     return;
   }
+  if (student.name.startsWith('ETIDYAN')) {
+    document.querySelector('.modal-icon').textContent = '!';
+    document.querySelector('.modal-title').textContent = 'Code non attribué';
+    document.querySelector('.modal-msg').textContent = 'Ce code n\'est pas encore attribué à un étudiant. Veuillez contacter votre enseignant.';
+    document.getElementById('modal-overlay').classList.add('show');
+    return;
+  }
 
   studentName = student.name;
 
