@@ -660,14 +660,35 @@ function hasAnyAnswer() {
   return false;
 }
 
+/* Retounen nan eksamen an nan premye seksyon ki gen yon kesyon san repons */
+function returnToFirstUnansweredSection() {
+  let target = 0;
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    const a = userAnswers[i];
+    const empty = a === undefined || a === null || a === '' || (Array.isArray(a) && a.length === 0);
+    if (empty) {
+      const si = SECTIONS.indexOf(QUESTIONS[i].section);
+      target = si >= 0 ? si : 0;
+      break;
+    }
+  }
+  currentSectionIdx = target;
+  document.getElementById('screen-summary').style.display = 'none';
+  document.getElementById('q-section-label').style.display = 'block';
+  document.getElementById('q-container').style.display = 'block';
+  document.getElementById('nav-zone').style.display = 'block';
+  renderSection(currentSectionIdx);
+}
+
 async function submitExam(autoSubmit) {
   if (examSubmitted) return;
   if (!autoSubmit && !hasAnyAnswer()) {
     /* Montre modal pop-up olye alert() -- examen_reseau_v2 */
     document.querySelector('.modal-icon').textContent = '!';
     document.querySelector('.modal-title').textContent = 'Attention';
-    document.querySelector('.modal-msg').innerHTML = 'Vous devez r�pondre � au moins une question avant de soumettre.';
+    document.querySelector('.modal-msg').innerHTML = 'Vous devez r\u00e9pondre \u00e0 au moins une question avant de soumettre.';
     document.getElementById('modal-overlay').classList.add('show');
+    returnToFirstUnansweredSection();
     return;
   }
   examSubmitted = true;
